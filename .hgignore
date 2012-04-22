@@ -1,0 +1,16 @@
+syntax: regexp
+^\.classpath$
+^\.project$
+^bin$
+^\.settings$
+^\.cache$
+^target$
+^.target$
+^reports$
+^\.scala_dependencies$
+\.DS_Store$
+^lib/
+^project/project/
+^project/boot/
+^project/target/
+^Scalatron/
