@@ -1,5 +1,5 @@
 package scalatron.botwar.botPlugin
 
 class ControlFunctionFactory {
-  def create: String => String = _ => "Status(text=Hello)" 
+  val create = (_: String) => "Status(text=*munch munch*)" 
 }

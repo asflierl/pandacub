@@ -14,3 +14,4 @@ syntax: regexp
 ^project/boot/
 ^project/target/
 ^Scalatron/
+^localsettings.sbt$

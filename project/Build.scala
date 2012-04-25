@@ -29,7 +29,7 @@ object PandaCubBuild extends Build {
     },
     
     testOptions := Seq(
-      Tests.Filter(_ == "pandacub.PandaCubSpec"), 
+      Tests.Filter(_ == "eu.flierl.pandacub.PandaCubSpec"), 
       Tests.Argument("html", "console")),
 
     testOptions <+= crossTarget map { ct =>
