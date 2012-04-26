@@ -20,6 +20,4 @@ case class MiniReact(generation: Int, entity: String, time: Int, view: String,
 
 case class Goodbye(energy: Int)
   
-case class Vec(x: Int, y: Int) {
-  override def toString = x.toString + ':' + y.toString
-}
+case class Vec(x: Int, y: Int)

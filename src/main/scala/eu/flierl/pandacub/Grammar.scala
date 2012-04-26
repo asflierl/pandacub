@@ -35,7 +35,7 @@ object Grammar extends JavaTokenParsers {
     "Goodbye(energy=" ~> wholeNumber <~ ")" ^^ (_.toInt) ^^ Goodbye
   
   lazy val string: Parser[String] = "[^=(),|]*".r
-  lazy val vecStr: Parser[String] = vec ^^ (_.toString)
+  lazy val vecStr: Parser[String] = vec ^^ implicitly[Show[Vec]].show
   lazy val vec: Parser[Vec] = (wholeNumber ~ ':' ~ wholeNumber) ^? { case x ~ _ ~ y => Vec(x toInt, y toInt) }
   lazy val sortByKey = (l: List[String ~ Char ~ String]) => l.sortBy(_._1._1)  
 }
