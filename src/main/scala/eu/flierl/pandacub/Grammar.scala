@@ -6,10 +6,6 @@ import scala.util.parsing.input.CharSequenceReader
 import scala.util.parsing.input.Reader
 
 object Grammar extends JavaTokenParsers {
-  lazy val string: Parser[String] = "[^=(),|]*".r
-  lazy val vecStr: Parser[String] = vec ^^ (_.toString)
-  lazy val vec: Parser[Vec] = (wholeNumber ~ ':' ~ wholeNumber) ^? { case x ~ _ ~ y => Vec(x toInt, y toInt) }
-  
   lazy val welcome: Parser[Welcome] = 
     "Welcome(" ~> repsep(
         (("name" | "path")        ~ '=' ~ string) 
@@ -37,5 +33,8 @@ object Grammar extends JavaTokenParsers {
   lazy val goodbye: Parser[Goodbye] = 
     "Goodbye(energy=" ~> wholeNumber <~ ")" ^^ (_.toInt) ^^ Goodbye
   
+  lazy val string: Parser[String] = "[^=(),|]*".r
+  lazy val vecStr: Parser[String] = vec ^^ (_.toString)
+  lazy val vec: Parser[Vec] = (wholeNumber ~ ':' ~ wholeNumber) ^? { case x ~ _ ~ y => Vec(x toInt, y toInt) }
   lazy val sortByKey = (l: List[String ~ Char ~ String]) => l.sortBy(_._1._1)  
 }
