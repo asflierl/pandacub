@@ -23,6 +23,3 @@ case class Goodbye(energy: Int)
 case class Vec(x: Int, y: Int) {
   override def toString = x.toString + ':' + y.toString
 }
-object Vec {
-  def apply(s: String): Vec = { val c = s.split(':'); Vec(c.head.toInt, c.tail.tail.head.toInt) }
-}
