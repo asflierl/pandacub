@@ -26,7 +26,8 @@ object Grammar extends JavaTokenParsers {
       case List("energy"~_~nrg, "entity"~_~ntt, "generation"~_~"0", "time"~_~t, "view"~_~v) =>
         MasterReact(0, ntt, t toInt, v, nrg toInt)
         
-      case List("energy"~_~nrg, "entity"~_~ntt, "generation"~_~g, "master"~_~m, "time"~_~t, "view"~_~v) =>
+      case List("energy"~_~nrg, "entity"~_~ntt, "generation"~_~g, "master"~_~m, "time"~_~t,
+          "view"~_~v) if g.toInt > 0 =>
         MiniReact(g toInt, ntt, t toInt, v, nrg toInt, parseAll(vec, m).get)
     }
     
