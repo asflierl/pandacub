@@ -2,6 +2,8 @@ package eu.flierl.pandacub
 
 import scala.util.parsing.combinator._
 import java.io.File
+import scala.util.parsing.input.CharSequenceReader
+import scala.util.parsing.input.Reader
 
 object Grammar extends JavaTokenParsers {
   lazy val string: Parser[String] = "[^=(),|]*".r
@@ -29,8 +31,11 @@ object Grammar extends JavaTokenParsers {
         MasterReact(0, ntt, t toInt, v, nrg toInt)
         
       case List("energy"~_~nrg, "entity"~_~ntt, "generation"~_~g, "master"~_~m, "time"~_~t, "view"~_~v) =>
-        MiniReact(g toInt, ntt, t toInt, v, nrg toInt, parse(vec, m).get)
+        MiniReact(g toInt, ntt, t toInt, v, nrg toInt, parseAll(vec, m).get)
     }
+    
+  lazy val goodbye: Parser[Goodbye] = 
+    "Goodbye(energy=" ~> wholeNumber <~ ")" ^^ (_.toInt) ^^ Goodbye
   
-  lazy val sortByKey = (l: List[String ~ Char ~ String]) => l.sortBy(_._1._1)
+  lazy val sortByKey = (l: List[String ~ Char ~ String]) => l.sortBy(_._1._1)  
 }
