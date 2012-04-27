@@ -11,8 +11,6 @@ import java.io.File
 class GrammarSpec extends Specification with ParserMatchers {
   val parsers = Grammar
   
-  args(sequential = true)
-  
   "The opcode grammar" should { 
                                                                                          
     "parse property strings correctly" in {                                                   

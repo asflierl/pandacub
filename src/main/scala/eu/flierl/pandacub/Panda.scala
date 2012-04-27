@@ -10,11 +10,11 @@ import Grammar.{
 import Show.show
 
 class Panda {
-  val react = (fromServer: String) => parseAll(opcode, fromServer) match {
+  val react = (fromServer: String) => show(parseAll(opcode, fromServer) match {
     case Success(_, _) => 
-      "Status(text=pondering...)"
-    case f @ Failure(m, r) => 
+      Status("whee") +: Log("muuh")
+    case f @ Failure(_,_) => 
       println(show(FailureDetail(f, fromServer)))
-      "Status(text=uh oh)"
-  } 
+      List(Status("oh noooo"))
+  })
 }

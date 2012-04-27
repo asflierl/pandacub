@@ -22,14 +22,18 @@ case class MiniReact(generation: Int, name: String, time: Int, view: String,
 
 case class Goodbye(energy: Int) extends OpcodeFromServer
 
-case class Spawn(direction: Vec, name: String, Energy: Int)
+sealed trait OpcodeFromBot {
+  def +: (first: OpcodeFromBot) = first :: this :: Nil  
+}
 
-case class Explode(size: Int)
+case class Spawn(direction: Vec, name: String, energy: Int) extends OpcodeFromBot
 
-case class Say(text: String)
+case class Explode(size: Int) extends OpcodeFromBot
 
-case class Status(text: String)
+case class Say(text: String) extends OpcodeFromBot
 
-case class Log(text: String)
+case class Status(text: String) extends OpcodeFromBot
+
+case class Log(text: String) extends OpcodeFromBot
 
 case class Vec(x: Int, y: Int)
