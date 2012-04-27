@@ -11,4 +11,6 @@ package object pandacub {
   def init[A](a: A)(f: A => Any) = { f(a); a }
   
   def ??? = throw new UnsupportedOperationException("not yet implemented")
+  
+  def sqrt(n: Int): Int = math.sqrt(n).toInt
 }

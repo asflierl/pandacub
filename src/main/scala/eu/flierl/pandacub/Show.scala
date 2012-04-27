@@ -28,11 +28,16 @@ object Show {
       case s: Status => show(s)
       case l: Log => show(l)
       case s: Say => show(s)
+      case m: Move => show(m)
     }
   }
 
   implicit def OpcodeListCanShow[A <: OpcodeFromBot]: Show[List[A]] = new Show[List[A]] {
     def showSome(l: List[A]) = l map show[OpcodeFromBot] mkString "|"
+  }
+  
+  implicit val MoveCanShow: Show[Move] = new Show[Move] {
+    def showSome(e: Move) = "Move(%s)" format keyValue("direction", show(e.direction))
   }
   
   implicit val SpawnCanShow: Show[Spawn] = new Show[Spawn] {

@@ -26,6 +26,8 @@ sealed trait OpcodeFromBot {
   def +: (first: OpcodeFromBot) = first :: this :: Nil  
 }
 
+case class Move(direction: Vec) extends OpcodeFromBot
+
 case class Spawn(direction: Vec, name: String, energy: Int) extends OpcodeFromBot
 
 case class Explode(size: Int) extends OpcodeFromBot
