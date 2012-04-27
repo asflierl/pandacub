@@ -22,7 +22,7 @@ object Grammar extends JavaTokenParsers {
   lazy val react: Parser[React] =
     "React(" ~> repsep(reactAttribute, ',') <~ ')' ^^ filterOptionalReactAttributes ^^ sortByKey ^? {
       case List("energy"~_~e, "generation"~_~"0", "name"~_~n, "time"~_~t, "view"~_~v) =>
-        MasterReact(0, n, t toInt, v, e toInt)
+        MasterReact(n, t toInt, v, e toInt)
         
       case List("energy"~_~e, "generation"~_~g, "master"~_~m, "name"~_~n, "time"~_~t,
           "view"~_~v) if g.toInt > 0 =>

@@ -25,9 +25,9 @@ class Panda {
     case Welcome(name, _, apocalypse, round) => 
       (state, show(Status("..zzzZZ")))
       
-    case MasterReact(generation, name, time, view, energy) =>
-      println(view.length)
-      val move = Status("moving") +: Move(Vec(1, 0))
+    case MasterReact(name, time, view, energy) =>
+      println(sqrt(view.length))
+      val move = Status("moving") +: Move(Vec(1, 0)) +: Spawn(Vec(-1, 0), "child" + time, 100)
       (state, show(if (time == 0) Say("Whee!") :: move else move))
       
     case MiniReact(generation, name, time, view, energy, master) =>

@@ -41,7 +41,7 @@ class GrammarSpec extends Specification with ParserMatchers {
       react must succeedOn(
         "React(generation=0,time=23,view=aaabbbccc,name=pandacub,energy=-5)"
       ).withResult(
-        MasterReact(0, "pandacub", 23, "aaabbbccc", -5))
+        MasterReact("pandacub", 23, "aaabbbccc", -5))
       
       react("React(generation=0,time=2,master=1:2,view=a,name=p,energy=0)") must beAFailure
         

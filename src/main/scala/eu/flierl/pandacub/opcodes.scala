@@ -7,15 +7,13 @@ sealed trait OpcodeFromServer
 case class Welcome(name: String, path: File, apocalypse: Int, round: Int) extends OpcodeFromServer
 
 sealed trait React extends OpcodeFromServer {
-  def generation: Int
   def name: String
   def time: Int
   def view: String
   def energy: Int
 }
 
-case class MasterReact(generation: Int, name: String, time: Int, view: String,
-  energy: Int) extends React
+case class MasterReact(name: String, time: Int, view: String, energy: Int) extends React
   
 case class MiniReact(generation: Int, name: String, time: Int, view: String,
   energy: Int, master: Vec) extends React
