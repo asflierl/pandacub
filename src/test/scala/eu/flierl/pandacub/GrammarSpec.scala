@@ -41,16 +41,16 @@ class GrammarSpec extends Specification with ParserMatchers {
     
     "parse the 'React' opcode correctly" in {
       react must succeedOn(
-        "React(generation=0,time=23,view=aaabbbccc,entity=pandacub,energy=-5)"
+        "React(generation=0,time=23,view=aaabbbccc,name=pandacub,energy=-5)"
       ).withResult(
         MasterReact(0, "pandacub", 23, "aaabbbccc", -5))
       
-      react("React(generation=0,time=2,master=1:2,view=a,entity=p,energy=0)") must beAFailure
+      react("React(generation=0,time=2,master=1:2,view=a,name=p,energy=0)") must beAFailure
         
-      react("React(generation=1,time=2,view=a,entity=p,energy=0)") must beAFailure
+      react("React(generation=1,time=2,view=a,name=p,energy=0)") must beAFailure
         
       react must succeedOn(
-        "React(master=-8:12345,view=aaabbbccc,entity=pandacub,generation=42,time=23,energy=-5)"
+        "React(master=-8:12345,view=aaabbbccc,name=pandacub,generation=42,time=23,energy=-5)"
       ).withResult(
         MiniReact(42, "pandacub", 23, "aaabbbccc", -5, Vec(-8, 12345)))
     } 

@@ -1,5 +1,7 @@
 package scalatron.botwar.botPlugin
 
+import eu.flierl.pandacub.Panda
+
 class ControlFunctionFactory {
-  val create = (_: String) => "Status(text=*munch munch*)" 
+  val create = new Panda().react 
 }
