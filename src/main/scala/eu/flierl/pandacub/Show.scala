@@ -31,8 +31,8 @@ object Show {
     }
   }
 
-  implicit val OpcodeListCanShow: Show[List[OpcodeFromBot]] = new Show[List[OpcodeFromBot]] {
-    def showSome(l: List[OpcodeFromBot]) = l map show[OpcodeFromBot] mkString "|"
+  implicit def OpcodeListCanShow[A <: OpcodeFromBot]: Show[List[A]] = new Show[List[A]] {
+    def showSome(l: List[A]) = l map show[OpcodeFromBot] mkString "|"
   }
   
   implicit val SpawnCanShow: Show[Spawn] = new Show[Spawn] {
