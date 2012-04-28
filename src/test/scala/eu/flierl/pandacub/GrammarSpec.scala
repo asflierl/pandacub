@@ -6,6 +6,7 @@ import org.specs2.runner._
 import org.specs2.matcher.ParserMatchers
 import Grammar.{ string, vec, welcome, react }
 import java.io.File
+import Cells._
 
 @RunWith(classOf[JUnitRunner])
 class GrammarSpec extends Specification with ParserMatchers {
@@ -39,18 +40,29 @@ class GrammarSpec extends Specification with ParserMatchers {
     
     "parse the 'React' opcode correctly" in {
       react must succeedOn(
-        "React(generation=0,time=23,view=aaabbbccc,name=pandacub,energy=-5)"
+        "React(generation=0,time=23,view=WPs_MSBm?,name=pandacub,energy=-5)"
       ).withResult(
-        MasterReact("pandacub", 23, "aaabbbccc", -5))
+        MasterReact("pandacub", 23, exampleView, -5))
       
-      react("React(generation=0,time=2,master=1:2,view=a,name=p,energy=0)") must beAFailure
+      react("React(generation=0,time=2,master=1:2,view=s,name=p,energy=0)") must beAFailure
         
-      react("React(generation=1,time=2,view=a,name=p,energy=0)") must beAFailure
+      react("React(generation=1,time=2,view=s,name=p,energy=0)") must beAFailure
         
       react must succeedOn(
-        "React(master=-8:12345,view=aaabbbccc,name=pandacub,generation=42,time=23,energy=-5)"
+        "React(master=-8:12345,view=WPs_MSBm?,name=pandacub,generation=42,time=23,energy=-5)"
       ).withResult(
-        MiniReact(42, "pandacub", 23, "aaabbbccc", -5, Vec(-8, 12345)))
+        MiniReact(42, "pandacub", 23, exampleView, -5, Vec(-8, 12345)))
     } 
-  }                                                                                
+  }
+  
+  def exampleView = View(3, Map(
+    Vec(0, 0) -> Wall,
+    Vec(1, 0) -> Bamboo,
+    Vec(2, 0) -> Kitty,
+    Vec(0, 1) -> Empty,
+    Vec(1, 1) -> Panda,
+    Vec(2, 1) -> Cub,
+    Vec(0, 2) -> Fluppet,
+    Vec(1, 2) -> Tiger,
+    Vec(2, 2) -> Fog))
 }

@@ -1,6 +1,7 @@
 package eu.flierl.pandacub
 
 import scala.annotation.implicitNotFound
+import Cells.Cell
 
 trait Show[A] {
   def showSome(a: A): String
@@ -66,6 +67,18 @@ object Show {
   implicit val VecCanShow: Show[Vec] = new Show[Vec] {
     def showSome(v: Vec) = "%d:%d" format (v.x, v.y)
   }
+  
+  implicit val ViewCanShow: Show[View] = new Show[View] {
+    def showSome(v: View) = (for {
+      y <- (0 until v.n)
+      x <- (0 until v.n)
+      cell = v area Vec(x, y)
+    } yield show(cell)) mkString
+  }
+  
+  implicit val CellCanShow: Show[Cell] = new Show[Cell] {
+    def showSome(c: Cell) = c.symbol.toString
+  } 
   
   def keyValue[A: Show, B: Show](key: A, value: B): String = "%s=%s" format (
     sanitize(show(key)), sanitize(show(value)))

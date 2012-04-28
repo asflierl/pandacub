@@ -9,13 +9,13 @@ case class Welcome(name: String, path: File, apocalypse: Int, round: Int) extend
 sealed trait React extends OpcodeFromServer {
   def name: String
   def time: Int
-  def view: String
+  def view: View
   def energy: Int
 }
 
-case class MasterReact(name: String, time: Int, view: String, energy: Int) extends React
+case class MasterReact(name: String, time: Int, view: View, energy: Int) extends React
   
-case class MiniReact(generation: Int, name: String, time: Int, view: String,
+case class MiniReact(generation: Int, name: String, time: Int, view: View,
   energy: Int, master: Vec) extends React
 
 case class Goodbye(energy: Int) extends OpcodeFromServer

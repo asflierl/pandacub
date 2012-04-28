@@ -5,6 +5,7 @@ import java.io.File
 import scala.util.parsing.input.CharSequenceReader
 import scala.util.parsing.input.Reader
 import Show.show
+import Cells._
 
 object Grammar extends JavaTokenParsers {
   lazy val opcode: Parser[OpcodeFromServer] = welcome | react | goodbye
@@ -22,15 +23,16 @@ object Grammar extends JavaTokenParsers {
   lazy val react: Parser[React] =
     "React(" ~> repsep(reactAttribute, ',') <~ ')' ^^ filterOptionalReactAttributes ^^ sortByKey ^? {
       case List("energy"~_~e, "generation"~_~"0", "name"~_~n, "time"~_~t, "view"~_~v) =>
-        MasterReact(n, t toInt, v, e toInt)
+        MasterReact(n, t toInt, parseAll(view, v) get, e toInt)
         
       case List("energy"~_~e, "generation"~_~g, "master"~_~m, "name"~_~n, "time"~_~t,
           "view"~_~v) if g.toInt > 0 =>
-        MiniReact(g toInt, n, t toInt, v, e toInt, parseAll(vec, m).get)
+        MiniReact(g toInt, n, t toInt, parseAll(view, v) get, e toInt, parseAll(vec, m) get)
     }
     
   lazy val reactAttribute: Parser[String ~ Char ~ String] = 
-    (("name" | "view")                  ~ '=' ~ string)      | 
+    ("name"                             ~ '=' ~ string)      |
+    ("view"                             ~ '=' ~ viewString)  |
     (("generation" | "time" | "energy") ~ '=' ~ wholeNumber) |
     ("master"                           ~ '=' ~ vecStr)      |
     (string                             ~ '=' ~ string)
@@ -46,6 +48,10 @@ object Grammar extends JavaTokenParsers {
   lazy val filterOptionalReactAttributes = (l: List[String ~ Char ~ String]) => l.filter { x => 
     Set("name", "view", "generation", "time", "energy", "master") contains x._1._1
   }.toSet.toList
+  
+  lazy val viewString: Parser[String] = view ^^ show[View]
+  lazy val view: Parser[View] = rep1(cell) ^^ View
+  lazy val cell: Parser[Cell] = allCells map (c => elem(c.symbol) ^^ (_ => c)) reduceLeft(_ | _)
   
   case class FailureDetail(failure: Failure, input: String)
 }
