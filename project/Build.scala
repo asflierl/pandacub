@@ -3,12 +3,14 @@ import Keys._
 import Project.Setting
 import com.typesafe.sbteclipse.plugin.EclipsePlugin.EclipseKeys
 import com.typesafe.sbteclipse.plugin.EclipsePlugin.EclipseCreateSrc
+import sbtassembly.Plugin._
+import AssemblyKeys._
 
 object PandaCubBuild extends Build {
   lazy val root = Project(
     id = "pandacub",
     base = file("."),
-    settings = Project.defaultSettings ++ botSettings)
+    settings = Project.defaultSettings ++ assemblySettings ++ botSettings)
     
   def botSettings: Seq[Setting[_]] = Seq(
     version := "1.0",
@@ -19,9 +21,11 @@ object PandaCubBuild extends Build {
       
     EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource,
     
+    assembleArtifact in packageScala := false,
+    
     scalatronDir := file("Scalatron"),
     
-    play <<= (scalatronDir, name, javaOptions, Keys.`package` in Compile) map {
+    play <<= (scalatronDir, name, javaOptions, assembly in Compile) map {
       (base, name, javaOptions, botJar) =>
         IO delete (base / "bots" / name)
         IO copyFile (botJar, base / "bots" / name / "ScalatronBot.jar")
@@ -38,7 +42,9 @@ object PandaCubBuild extends Build {
       }
     },
 
-    libraryDependencies ++= Seq(    
+    libraryDependencies ++= Seq(
+      "com.assembla.scala-incubator" % "graph-core_2.9.1" % "1.4.3",
+      
       "org.specs2" %% "specs2" % "1.9" % "test",
       "org.scalacheck" %% "scalacheck" % "1.9" % "test",
       "junit" % "junit" % "4.7" % "test",
