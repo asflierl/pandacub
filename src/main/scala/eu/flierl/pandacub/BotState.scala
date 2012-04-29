@@ -1,5 +1,5 @@
 package eu.flierl.pandacub
 
-case class BotState {
+case class BotState() {
 
 }

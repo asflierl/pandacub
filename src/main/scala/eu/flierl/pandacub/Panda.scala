@@ -6,8 +6,8 @@ import Show.show
 final class Panda(state: BotState) {
   def react(time: Int, view: View, energy: Int): State = {
     val center = Vec(view.len / 2, view.len / 2)
-    def grab(n: Vec) = view.graph get n
-    val paths = new ShortestPaths(view.graph, grab(center))
+//    def node(n: Vec): view.graph.NodeT = view.graph get n
+    val paths = new ShortestPaths(view.graph, center)
     
     println("\n")
     println(view.toString)
@@ -15,12 +15,12 @@ final class Panda(state: BotState) {
     
     val food = for {
       f <- (view.all(Bamboo) ++ view.all(Fluppet)).toSeq
-      d <- paths.distanceTo(grab(f))
+      d <- paths.distanceTo(f)
     } yield (d, f)
 
     if (! food.isEmpty) {
       val nextFood = food.minBy(_._1)._2
-      val target = paths.firstStepTo(grab(nextFood)).get.value
+      val target = paths.firstStepToVec(nextFood).get.value
       (state, show(Move(target - center) +: Status("*munch*")))
     } else {
       (state, show(Status("nowhere to go")))

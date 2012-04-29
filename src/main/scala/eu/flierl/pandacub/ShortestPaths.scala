@@ -7,48 +7,58 @@ import java.util.Comparator
 import collection.JavaConverters._
 import scala.annotation.tailrec
 
-final class ShortestPaths (graph: G, from: N) {
-  private val dist = Map[N, Long]()
-  private val previous = Map[N, N]()
+final class ShortestPaths(val graph: G, center: Vec) {
+  private val dist = Map[graph.NodeT, Long]()
+  private val previous = Map[graph.NodeT, graph.NodeT]()
   private val inf = Long.MaxValue
+  private val from = graph get center
   
   dist.put(from, 0)
   
-  private val q = new TreeSet(new Comparator[N] {
-    def compare(a: N, b: N) = dist.getOrElse(a, inf).compare(dist.getOrElse(b, inf)) 
+  private val q = new TreeSet(new Comparator[graph.NodeT] {
+    def compare(a: graph.NodeT, b: graph.NodeT) = dist.getOrElse(a, inf).compare(dist.getOrElse(b, inf)) 
   })
   
   q addAll graph.nodes.asJava
   
   while (! q.isEmpty && dist.contains(q.first)) {
-    val u = q.pollFirst
+    val closest = q.pollFirst
     
-    for (v <- u.outNeighbors if q.contains(v)) {
-      val alt = dist(u) + 1L //FIXME use weight
-      if ((dist contains v) && alt < dist(v)) {
-        q remove v
-        dist.put(v, alt)
-        previous.put(v, u)
-        q add v
+    for { 
+      neighbour <- closest.outNeighbors if q.contains(neighbour)
+      edge <- closest.outgoingTo(neighbour)
+    } {
+      val newDistance = dist(closest) + edge.weight 
+      if ((dist contains neighbour) && newDistance < dist(neighbour)) {
+        q remove neighbour
+        dist.put(neighbour, newDistance)
+        previous.put(neighbour, closest)
+        q add neighbour
       } else {
-        dist.put(v, alt)
-        previous.put(v, u)
-        q add v
+        dist.put(neighbour, newDistance)
+        previous.put(neighbour, closest)
+        q add neighbour
       }
     }
   }
   
   lazy val distances = collection.immutable.Map() ++ dist
   
-  def distanceTo(n: N): Option[Long] = dist.get(n)
+  def distanceTo(n: Vec): Option[Long] = graph find n flatMap dist.get
+  
+  def pathToVec(n: Vec, p: List[graph.NodeT] = List()): List[graph.NodeT] =
+    (graph find n).toList flatMap (x => pathTo(x))
   
   @tailrec
-  def pathTo(n: N, p: List[N] = List()): List[N] =
+  def pathTo(n: graph.NodeT, p: List[graph.NodeT] = List()): List[graph.NodeT] =
     if (! previous.contains(n)) p
     else pathTo(previous(n), n :: p)
     
+  def firstStepToVec(n: Vec): Option[graph.NodeT] =
+    graph find n flatMap firstStepTo
+    
   @tailrec
-  def firstStepTo(n: N): Option[N] =
+  def firstStepTo(n: graph.NodeT): Option[graph.NodeT] =
     if (! previous.contains(n)) None
     else if (previous(n) == from) Some(n)
     else firstStepTo(previous(n))

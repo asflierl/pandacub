@@ -12,8 +12,6 @@ package object pandacub {
   
   type G = Graph[Vec, WUnDiEdge]
   
-  type N = G#NodeT
-  
   def init[A](a: A)(f: A => Any) = { f(a); a }
   
   def ??? = throw new UnsupportedOperationException("not yet implemented")
