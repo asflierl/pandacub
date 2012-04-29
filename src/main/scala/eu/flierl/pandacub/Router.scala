@@ -10,10 +10,12 @@ import Grammar.{
 import Show.show
 
 object Router {
+  private[this] object Monitor
+  
   lazy val parseAndRoute: State =/> State = { 
     case (state, fromServer) =>
       try {
-        unsafeParseAndRoute(state, fromServer)
+        Monitor synchronized unsafeParseAndRoute(state, fromServer)
       } catch {
         case exc: Exception =>
           exc.printStackTrace
@@ -35,8 +37,7 @@ object Router {
       (state, show(Status("..zzzZZ")))
       
     case MasterReact(_, time, view, energy) =>
-      val move = Status("moving") +: Move(Vec(1, 0)) +: Spawn(Vec(-1, 0), "child" + time, 100)
-      (state, show(if (time == 0) Say("Whee!") :: move else move))
+      new Panda(state).react(time, view, energy)
       
     case MiniReact(generation, name, time, view, energy, master) =>
       (state, "")

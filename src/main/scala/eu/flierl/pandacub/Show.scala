@@ -70,8 +70,8 @@ object Show {
   
   implicit val ViewCanShow: Show[View] = new Show[View] {
     def showSome(v: View) = (for {
-      y <- (0 until v.n)
-      x <- (0 until v.n)
+      y <- (0 until v.len)
+      x <- (0 until v.len)
       cell = v area Vec(x, y)
     } yield show(cell)) mkString
   }

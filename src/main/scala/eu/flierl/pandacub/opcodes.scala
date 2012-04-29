@@ -36,4 +36,7 @@ case class Status(text: String) extends OpcodeFromBot
 
 case class Log(text: String) extends OpcodeFromBot
 
-case class Vec(x: Int, y: Int)
+case class Vec(x: Int, y: Int) {
+  def +(v: Vec) = Vec(x + v.x, y + v.y)
+  def -(v: Vec) = Vec(x - v.x, y - v.y)
+}

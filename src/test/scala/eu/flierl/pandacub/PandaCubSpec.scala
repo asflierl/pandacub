@@ -11,5 +11,6 @@ class PandaCubSpec extends Specification { def is =
     "the opcode grammar" ~ new GrammarSpec                           ^
     "showable stuff" ~ new ShowSpec                                  ^
     "opcodes from the server and from the bot" ~ new OpcodeSpec      ^
+    "the view and its graph" ~ new ViewSpec                          ^
                                                                   end
 }
