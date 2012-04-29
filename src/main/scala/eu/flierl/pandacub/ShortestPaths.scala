@@ -21,17 +21,16 @@ final class ShortestPaths(val graph: G, center: Vec) {
   
   while (! q.isEmpty && dist.contains(q.first)) {
     val closest = q.pollFirst
-    
+
     for { 
-      neighbour <- closest.outNeighbors if q.contains(neighbour)
-      edge <- closest.outgoingTo(neighbour)
+      neighbour <- (closest outNeighbors) if q contains neighbour
+      edge <- closest outgoingTo neighbour
     } {
       val newDistance = dist(closest) + edge.weight 
-      if ((dist contains neighbour) && newDistance < dist(neighbour)) {
-        q remove neighbour
-      }
       
-      if (! (dist contains neighbour)) {
+      if (((dist contains neighbour) && newDistance < dist(neighbour)) 
+          || ! (dist contains neighbour)) {
+        q remove neighbour
         dist.put(neighbour, newDistance)
         previous.put(neighbour, closest)
         q add neighbour
@@ -40,16 +39,15 @@ final class ShortestPaths(val graph: G, center: Vec) {
   }
   
   object Ord extends Comparator[graph.NodeT] {
-    private[this] val inf = Long.MaxValue
+    private[this] val inf = Int.MaxValue.toLong
     
-    def compare(a: graph.NodeT, b: graph.NodeT) =
-      if (a.value == b.value) 0
-      else {
-        val weights = implicitly[Ordering[Long]].compare(
-          dist.getOrElse(a, inf), dist.getOrElse(b, inf))
-        if (weights != 0) weights
-        else implicitly[Ordering[Vec]].compare(a.value, b.value)
-      }
+    def compare(a: graph.NodeT, b: graph.NodeT) = {
+      val weights = implicitly[Ordering[Long]].compare(
+        dist.getOrElse(a, inf), dist.getOrElse(b, inf))
+      
+      if (weights != 0) weights
+      else implicitly[Ordering[Vec]].compare(a.value, b.value)
+    }
   }
   
   lazy val distances = collection.immutable.Map() ++ dist

@@ -3,6 +3,7 @@ package eu.flierl.pandacub
 import org.specs2.mutable._
 import org.junit.runner._
 import org.specs2.runner._
+import Utils.viewFrom
 
 @RunWith(classOf[JUnitRunner])
 class ViewSpec extends Specification {
@@ -37,6 +38,4 @@ class ViewSpec extends Specification {
     }
     
   }                           
-  
-  def viewFrom(s: String): View = Grammar.parseAll(Grammar.view, s).get
 }

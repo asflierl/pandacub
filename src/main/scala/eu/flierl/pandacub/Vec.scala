@@ -6,7 +6,7 @@ case class Vec(x: Int, y: Int) {
 }
 
 object Vec extends ((Int, Int) => Vec) {
-  implicit val DefaultOrdering: Ordering[Vec] = new Ordering[Vec] {
+  implicit val Ord: Ordering[Vec] = new Ordering[Vec] {
     def compare(a: Vec, b: Vec) = {
       val priorityCriterion = implicitly[Ordering[Int]].compare(a.x, b.x) 
       if (priorityCriterion != 0) priorityCriterion

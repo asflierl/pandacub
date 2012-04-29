@@ -8,6 +8,7 @@ import scalax.collection.GraphPredef._
 import scalax.collection.GraphEdge._
 import scalax.collection.edge.Implicits._
 import scalax.collection.edge.WUnDiEdge
+import Utils.viewFrom
 
 @RunWith(classOf[JUnitRunner])
 class ShortestPathsSpec extends Specification {
@@ -15,9 +16,9 @@ class ShortestPathsSpec extends Specification {
                                                                                          
     "find the only path available" in {
       val graph: G = Graph(Vec(0, 0) ~ Vec(1, 0) % 1L)
-      val paths = new ShortestPaths(graph, graph get Vec(0, 0))
+      val paths = new ShortestPaths(graph, Vec(0, 0))
       
-      paths.distanceTo(graph get Vec(1, 0)) must be some 1L
+      paths.distanceTo(Vec(1, 0)) must be some 1L
     }
     
     "find the lighter one of 2 available paths" in {
@@ -28,7 +29,7 @@ class ShortestPathsSpec extends Specification {
         Vec(0, 0) ~ Vec(0, 1) % 1L,
         Vec(0, 1) ~ Vec(1, 1) % 1L)
         
-      val paths = new ShortestPaths(graph, graph get Vec(0, 0))
+      val paths = new ShortestPaths(graph, Vec(0, 0))
       
       paths.distanceTo(graph get Vec(1, 1)) must be some 2L
     }
@@ -42,9 +43,41 @@ class ShortestPathsSpec extends Specification {
         Vec(0, 0) ~ Vec(0, 1) % 1L,
         Vec(0, 1) ~ Vec(1, 1) % 1L)
         
-      val paths = new ShortestPaths(graph, graph get Vec(0, 0))
+      val paths = new ShortestPaths(graph, Vec(0, 0))
       
-      paths.distanceTo(graph get Vec(1, 1)) must be some 2L
+      paths.distanceTo(Vec(1, 1)) must be some 2L
+    }
+    
+    "find some bamboo" in {
+      val graph = viewFrom(
+        "_______"
+      + "______P"
+      + "_______"
+      + "___M___"
+      + "_______"
+      + "_______"
+      + "_______").graph
+        
+      val paths = new ShortestPaths(graph, Vec(3, 3))
+      
+      paths.distanceTo(Vec(6, 1)) must be some
+    }
+    
+    "find around an obstacle" in {
+      val graph = viewFrom(
+        "_________"
+      + "_WWWWW___"
+      + "_____W___"
+      + "_____W___"
+      + "____MW___"
+      + "_____W_P_"
+      + "_____W___"
+      + "___WWW___"
+      + "_________").graph
+        
+      val paths = new ShortestPaths(graph, Vec(4, 4))
+      
+      paths.distanceTo(Vec(7, 5)) must be some
     }
   }                           
 }
