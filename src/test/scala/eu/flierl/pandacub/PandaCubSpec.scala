@@ -12,5 +12,6 @@ class PandaCubSpec extends Specification { def is = args(sequential=true) ^
     "showable stuff" ~ new ShowSpec                                       ^
     "opcodes from the server and from the bot" ~ new OpcodeSpec           ^
     "the view and its graph" ~ new ViewSpec                               ^
+    "a Dijkstra shortest path implementation" ~ new ShortestPathsSpec     ^
                                                                        end
 }

@@ -10,14 +10,12 @@ import scala.annotation.tailrec
 final class ShortestPaths(val graph: G, center: Vec) {
   private val dist = Map[graph.NodeT, Long]()
   private val previous = Map[graph.NodeT, graph.NodeT]()
-  private val inf = Long.MaxValue
+  
   private val from = graph get center
   
   dist.put(from, 0)
   
-  private val q = new TreeSet(new Comparator[graph.NodeT] {
-    def compare(a: graph.NodeT, b: graph.NodeT) = dist.getOrElse(a, inf).compare(dist.getOrElse(b, inf)) 
-  })
+  private val q = new TreeSet(Ord)
   
   q addAll graph.nodes.asJava
   
@@ -31,15 +29,27 @@ final class ShortestPaths(val graph: G, center: Vec) {
       val newDistance = dist(closest) + edge.weight 
       if ((dist contains neighbour) && newDistance < dist(neighbour)) {
         q remove neighbour
-        dist.put(neighbour, newDistance)
-        previous.put(neighbour, closest)
-        q add neighbour
-      } else {
+      }
+      
+      if (! (dist contains neighbour)) {
         dist.put(neighbour, newDistance)
         previous.put(neighbour, closest)
         q add neighbour
       }
     }
+  }
+  
+  object Ord extends Comparator[graph.NodeT] {
+    private[this] val inf = Long.MaxValue
+    
+    def compare(a: graph.NodeT, b: graph.NodeT) =
+      if (a.value == b.value) 0
+      else {
+        val weights = implicitly[Ordering[Long]].compare(
+          dist.getOrElse(a, inf), dist.getOrElse(b, inf))
+        if (weights != 0) weights
+        else implicitly[Ordering[Vec]].compare(a.value, b.value)
+      }
   }
   
   lazy val distances = collection.immutable.Map() ++ dist

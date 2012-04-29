@@ -24,11 +24,25 @@ class ShortestPathsSpec extends Specification {
       val graph: G = Graph(
         Vec(0, 0) ~ Vec(1, 0) % 2L,
         Vec(1, 0) ~ Vec(1, 1) % 2L,
+        
         Vec(0, 0) ~ Vec(0, 1) % 1L,
         Vec(0, 1) ~ Vec(1, 1) % 1L)
+        
       val paths = new ShortestPaths(graph, graph get Vec(0, 0))
       
-      println(paths.distances)
+      paths.distanceTo(graph get Vec(1, 1)) must be some 2L
+    }
+    
+    "find the shorter one of 2 available paths" in {
+      val graph: G = Graph(
+        Vec(0, 0) ~ Vec(1, 0) % 1L,
+        Vec(1, 0) ~ Vec(2, 0) % 1L,
+        Vec(2, 0) ~ Vec(1, 1) % 1L,
+        
+        Vec(0, 0) ~ Vec(0, 1) % 1L,
+        Vec(0, 1) ~ Vec(1, 1) % 1L)
+        
+      val paths = new ShortestPaths(graph, graph get Vec(0, 0))
       
       paths.distanceTo(graph get Vec(1, 1)) must be some 2L
     }
