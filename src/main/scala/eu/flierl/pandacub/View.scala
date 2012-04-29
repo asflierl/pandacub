@@ -12,9 +12,6 @@ final case class View(len: Int, area: Map[Vec, Cell]) {
   
   def all(c: Cell): Set[Vec] = inverse.getOrElse(c, Set())
   
-  type G = Graph[Vec, WUnDiEdge]
-  type N = graph.NodeT
-  
   lazy val graph: G = Graph((for {
     v <- area.keys.toSeq filter isSafe
     n <- southEastNeighboursOf(v)
