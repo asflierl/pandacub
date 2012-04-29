@@ -25,11 +25,14 @@ object PandaCubBuild extends Build {
     
     scalatronDir := file("Scalatron"),
     
+    javaOptions ++= Seq("-server", "-Xmx2g", "-XX:+TieredCompilation", 
+      "-XX:Tier2CompileThreshold=150000", "-XX:CompileThreshold=1500"),
+    
     play <<= (scalatronDir, name, javaOptions, assembly in Compile) map {
       (base, name, javaOptions, botJar) =>
         IO delete (base / "bots" / name)
         IO copyFile (botJar, base / "bots" / name / "ScalatronBot.jar")
-        Process("java" +: (javaOptions ++ Seq("-server", "-Xmx4g", "-jar", "Scalatron.jar", "-browser", "no")), base / "bin") !
+        Process("java" +: (javaOptions ++ Seq("-jar", "Scalatron.jar", "-browser", "no")), base / "bin") !
     },
     
     testOptions := Seq(
