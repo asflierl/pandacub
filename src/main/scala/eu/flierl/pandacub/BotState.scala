@@ -1,3 +1,9 @@
 package eu.flierl.pandacub
 
-case class BotState(last: Option[Vec] = None)
+import collection.breakOut
+
+case class BotState(last: List[Trail] = List()) {
+  lazy val trailMap: Map[Vec, Long] = last.map(t => t.cell -> t.discouragement)(breakOut) 
+}
+
+case class Trail(cell: Vec, discouragement: Long = 33L)

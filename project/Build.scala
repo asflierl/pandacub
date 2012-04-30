@@ -26,7 +26,7 @@ object PandaCubBuild extends Build {
     scalatronDir := file("Scalatron"),
     
     javaOptions ++= Seq("-server", "-Xmx2g", "-XX:+TieredCompilation", 
-      "-XX:Tier2CompileThreshold=150000", "-XX:CompileThreshold=1500"),
+      "-XX:Tier2CompileThreshold=150000", "-XX:CompileThreshold=1500", "-XX:+AggressiveOpts"),
     
     play <<= (scalatronDir, name, javaOptions, assembly in Compile) map {
       (base, name, javaOptions, botJar) =>

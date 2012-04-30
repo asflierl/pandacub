@@ -11,7 +11,7 @@ import scalax.collection.edge.Implicits._
 final class Panda(state: BotState) {
   def react(time: Int, view: View, energy: Int): State = {
     val center = Vec(view.len / 2, view.len / 2)
-    val paths = new ShortestPaths(dontLookBack(view.graph, center), center)
+    val paths = new ShortestPaths(view.graph(state.trailMap), center)
     
 //    println("\n")
 //    println(view.toString)
@@ -47,14 +47,11 @@ final class Panda(state: BotState) {
            cells: Seq[(Long, Vec)], center: Vec, paths: ShortestPaths): Some[State] = {
     val nextCell = order(cells)._2
     val target = paths.firstStepToVec(nextCell).get.value
-    Some((state.copy(last = Some(center + center - target)), 
-         show(Move(target - center) +: Status(status))))
+    Some((state.copy(last = (Trail(center) :: state.last.take(15)) map { t =>
+      t.copy(cell = t.cell + center - target, 
+            discouragement = t.discouragement - 2L)
+    }), show(Move(target - center) +: Status(status))))
   }
-  
-  def dontLookBack(graph: G, center: Vec): G = state.last.flatMap { last =>
-    if (! (graph contains last)) None
-    else graph.get(center).outgoingTo(graph.get(last)).headOption.map { edge =>
-      graph - edge + (center ~ last % 31L)
-    }
-  }.getOrElse(graph)
 }
+
+

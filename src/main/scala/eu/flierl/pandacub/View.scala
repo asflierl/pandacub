@@ -12,10 +12,10 @@ final case class View(len: Int, area: Map[Vec, Cell]) {
   
   def all(c: Cell): Set[Vec] = inverse.getOrElse(c, Set())
   
-  lazy val graph: G = Graph((for {
+  def graph(last: Map[Vec, Long] = Map()): G = Graph((for {
     v <- area.keys.toSeq filter isSafe
     n <- southEastNeighboursOf(v)
-  } yield v ~ n % 1):_*)
+  } yield v ~ n % last.get(v).orElse(last.get(n)).getOrElse(1L)):_*)
   
   private[this] def southEastNeighboursOf(v: Vec): Seq[Vec] =
     Seq(Vec(1, 0), Vec(0, 1), Vec(1, 1), Vec(1, -1)) map (v+) filter area.contains filter isSafe

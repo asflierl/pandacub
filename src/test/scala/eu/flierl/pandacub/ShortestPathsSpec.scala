@@ -56,7 +56,7 @@ class ShortestPathsSpec extends Specification {
       + "___M___"
       + "_______"
       + "_______"
-      + "_______").graph
+      + "_______").graph()
         
       val paths = new ShortestPaths(graph, Vec(3, 3))
       
@@ -73,7 +73,7 @@ class ShortestPathsSpec extends Specification {
       + "_____W_P_"
       + "_____W___"
       + "___WWW___"
-      + "_________").graph
+      + "_________").graph()
         
       val paths = new ShortestPaths(graph, Vec(4, 4))
       
