@@ -20,10 +20,6 @@ final case class View(len: Int, area: Map[Vec, Cell]) {
   private[this] def southEastNeighboursOf(v: Vec): Seq[Vec] =
     Seq(Vec(1, 0), Vec(0, 1), Vec(1, 1), Vec(1, -1)) map (v+) filter area.contains filter isSafe
   
-  def neighboursOf(v: Vec): Seq[Vec] =
-    Seq(Vec(1, 0), Vec(0, 1), Vec(1, 1), Vec(1, -1), Vec(0, -1), Vec(-1, -1),
-        Vec(-1, 0), Vec(-1, 1)) map (v+) filter area.contains filter isSafe
-    
   def isSafe(v: Vec) = area(v) match {
     case Wall | Tiger | Kitty | Shroom | Snorg => false
     case _ => true

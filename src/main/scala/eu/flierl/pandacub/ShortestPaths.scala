@@ -50,18 +50,8 @@ final class ShortestPaths(val graph: G, center: Vec) {
     }
   }
   
-  lazy val distances = collection.immutable.Map() ++ dist
-  
   def distanceTo(n: Vec): Option[Long] = graph find n flatMap dist.get
-  
-  def pathToVec(n: Vec, p: List[graph.NodeT] = List()): List[graph.NodeT] =
-    (graph find n).toList flatMap (x => pathTo(x))
-  
-  @tailrec
-  def pathTo(n: graph.NodeT, p: List[graph.NodeT] = List()): List[graph.NodeT] =
-    if (! previous.contains(n)) p
-    else pathTo(previous(n), n :: p)
-    
+      
   def firstStepToVec(n: Vec): Option[graph.NodeT] =
     graph find n flatMap firstStepTo
     
