@@ -9,12 +9,12 @@ trait Show[A] {
 object Show {
   def show[A](thing: A)(implicit please: Show[A]): String = please showSome thing  
   
-  implicit val FailureCanShow: Show[Grammar.FailureDetail] = new Show[Grammar.FailureDetail] {
+  implicit object FailureCanShow extends Show[Grammar.FailureDetail] {
     def showSome(d: Grammar.FailureDetail) = "%s%nat: %s%n%s^".format(d.failure.msg, d.input, 
       " " * (d.input.indexOf(d.failure.next) + 4))
   }
 
-  implicit val IntCanShow: Show[Int] = new Show[Int] {
+  implicit object IntCanShow extends Show[Int] {
     def showSome(i: Int) = Integer toString i
   }
   
@@ -22,7 +22,50 @@ object Show {
     def showSome(c: A) = c toString
   }
   
-  implicit val OpcodeFromBotCanShow: Show[OpcodeFromBot] = new Show[OpcodeFromBot] {
+  implicit object VecCanShow extends Show[Vec] {
+    def showSome(v: Vec) = "%d:%d" format (v.x, v.y)
+  }
+  
+  implicit object MoveCanShow extends Show[Move] {
+    def showSome(e: Move) = "Move(%s)" format keyValue("direction", show(e.direction))
+  }
+  
+  implicit object SpawnCanShow extends Show[Spawn] {
+    def showSome(s: Spawn) = "Spawn(%s,%s,%s)" format (
+      keyValue("direction", show(s.direction)),
+      keyValue("name", show(s.name)),
+      keyValue("energy", show(s.energy)))
+  }
+  
+  implicit object ExplodeCanShow extends Show[Explode] {
+    def showSome(e: Explode) = "Explode(%s)" format keyValue("size", show(e.size))
+  }
+  
+  implicit object StatusCanShow extends Show[Status] {
+    def showSome(s: Status) = "Status(%s)" format keyValue("text", s.text)
+  }
+  
+  implicit object LogCanShow extends Show[Log] {
+    def showSome(l: Log) = "Log(%s)" format keyValue("text", l.text)
+  }
+  
+  implicit object SayCanShow extends Show[Say] {
+    def showSome(s: Say) = "Say(%s)" format keyValue("text", s.text)
+  }
+  
+  implicit object CellCanShow extends Show[Cell] {
+    def showSome(c: Cell) = c.symbol.toString
+  } 
+  
+  implicit object ViewCanShow extends Show[View] {
+    def showSome(v: View) = (for {
+      y <- (0 until v.len)
+      x <- (0 until v.len)
+      cell = v area Vec(x, y)
+    } yield show(cell)) mkString
+  }
+  
+  implicit object OpcodeFromBotCanShow extends Show[OpcodeFromBot] {
     def showSome(op: OpcodeFromBot) = op match {
       case s: Spawn => show(s)
       case e: Explode => show(e)
@@ -32,53 +75,10 @@ object Show {
       case m: Move => show(m)
     }
   }
-
+  
   implicit def OpcodeListCanShow[A <: OpcodeFromBot]: Show[List[A]] = new Show[List[A]] {
     def showSome(l: List[A]) = l map show[OpcodeFromBot] mkString "|"
   }
-  
-  implicit val MoveCanShow: Show[Move] = new Show[Move] {
-    def showSome(e: Move) = "Move(%s)" format keyValue("direction", show(e.direction))
-  }
-  
-  implicit val SpawnCanShow: Show[Spawn] = new Show[Spawn] {
-    def showSome(s: Spawn) = "Spawn(%s,%s,%s)" format (
-      keyValue("direction", show(s.direction)),
-      keyValue("name", show(s.name)),
-      keyValue("energy", show(s.energy)))
-  }
-  
-  implicit val ExplodeCanShow: Show[Explode] = new Show[Explode] {
-    def showSome(e: Explode) = "Explode(%s)" format keyValue("size", show(e.size))
-  }
-  
-  implicit val StatusCanShow: Show[Status] = new Show[Status] {
-    def showSome(s: Status) = "Status(%s)" format keyValue("text", s.text)
-  }
-  
-  implicit val LogCanShow: Show[Log] = new Show[Log] {
-    def showSome(l: Log) = "Log(%s)" format keyValue("text", l.text)
-  }
-  
-  implicit val SayCanShow: Show[Say] = new Show[Say] {
-    def showSome(s: Say) = "Say(%s)" format keyValue("text", s.text)
-  }
-  
-  implicit val VecCanShow: Show[Vec] = new Show[Vec] {
-    def showSome(v: Vec) = "%d:%d" format (v.x, v.y)
-  }
-  
-  implicit val ViewCanShow: Show[View] = new Show[View] {
-    def showSome(v: View) = (for {
-      y <- (0 until v.len)
-      x <- (0 until v.len)
-      cell = v area Vec(x, y)
-    } yield show(cell)) mkString
-  }
-  
-  implicit val CellCanShow: Show[Cell] = new Show[Cell] {
-    def showSome(c: Cell) = c.symbol.toString
-  } 
   
   def keyValue[A: Show, B: Show](key: A, value: B): String = "%s=%s" format (
     sanitize(show(key)), sanitize(show(value)))
