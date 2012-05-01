@@ -2,30 +2,28 @@ package eu.flierl.pandacub
 
 import Cells._
 import Show.show
+import collection.breakOut
 
 abstract class PointsOfInterest(state: BotState, view: View) {
   val center = Vec(view.len / 2, view.len / 2)
   val paths = new ShortestPaths(view.graph(state.trailMap), center)
   
-  val closestFood: Option[State] = {
-    val food = for {
-      f <- (view.all(Bamboo) ++ view.all(Fluppet)).toSeq
-      d <- paths.distanceTo(f)
-    } yield (d, f)
-    
-    if (food isEmpty) None
-    else move(_.minBy(_._1), "*munch*", food)
+  def closest(cell: Cell, status: String): Option[State] = best(cell, status, _.minBy(_._1)) 
+  
+  def farthest(cell: Cell, status: String): Option[State] = best(cell, status, _.maxBy(_._1)) 
+  
+  val confused = (state, show(Status("*confused*")))
+  
+  def best(cell: Cell, status: String, order: Seq[(Long, Vec)] => (Long, Vec)): Option[State] = {
+    val cells = pathsTo(cell)
+    if (cells isEmpty) None
+    else move(order, status, cells)
   }
   
-  def farthest(cell: Cell, status: String): Option[State] = {
-    val cells = for {
-      c <- view.all(cell).toSeq
-      d <- paths.distanceTo(c)
-    } yield (d, c)
-    
-    if (cells isEmpty) None
-    else move(_.maxBy(_._1), status, cells)
-  }
+  def pathsTo(cell: Cell): Seq[(Long, Vec)] = (for {
+      f <- view.all(cell)
+      d <- paths.distanceTo(f)
+    } yield (d, f))(breakOut)
   
   def move(order: Seq[(Long, Vec)] => (Long, Vec), status: String, 
            cells: Seq[(Long, Vec)]): Some[State] = {
