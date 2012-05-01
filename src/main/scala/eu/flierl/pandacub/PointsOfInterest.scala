@@ -89,8 +89,9 @@ abstract class PointsOfInterest(state: BotState, view: View) {
       d                  <- paths distanceTo v if d > 0
       currentContent      = view area v
       stillValid          = currentContent == c || currentContent == Fog || c == Fog
-    } yield 
-      if (p == prio || stillValid) f 
+    } yield
+      if (discoveredFocus.cell == Panda) discoveredFocus
+      else if (p == prio || stillValid) f 
       else discoveredFocus
     ) getOrElse discoveredFocus
   

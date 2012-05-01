@@ -37,7 +37,7 @@ import Cells.{ Panda, Cub }
 
 final class Cub(state: BotState) {
   def react(time: Int, view: View, energy: Int, master: Vec): OpWithState =
-    decideBasedOn(state, if (energy > 2000) view exclude Cub else view exclude (Panda, Cub)) nextMove
+    decideBasedOn(state, if (energy > 2500) view exclude Cub else view exclude (Panda, Cub)) nextMove
   
   val decideBasedOn = new PointsOfInterest(_: BotState, _: View) with MovementDecision {
     def nextMove =

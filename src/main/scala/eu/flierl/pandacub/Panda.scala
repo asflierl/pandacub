@@ -42,7 +42,7 @@ final class Panda(state: BotState) {
     
   private[this] def spawn(time: Int, view: View) = for {
     somewhere <- view.neighbours(view.center).headOption.toList
-  } yield Spawn(somewhere, "cub-" + time, 200)
+  } yield Spawn(somewhere, "cub-" + time, 500)
   
   private[this] val decideBasedOn = new PointsOfInterest(_: BotState, _: View) with MovementDecision {
     def nextMove =
