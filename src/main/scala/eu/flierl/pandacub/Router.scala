@@ -74,6 +74,6 @@ object Router {
       (state, "")
       
     case Goodbye(energy) =>
-      (state, "")
+      EndOfRound(state, energy)
   }
 }

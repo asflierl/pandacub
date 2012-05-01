@@ -66,7 +66,7 @@ object PandaCubBuild extends Build {
         IO delete (base / "bots" / name)
         IO copyFile (botJar, base / "bots" / name / "ScalatronBot.jar")
         Process("java" +: (javaOptions ++ Seq("-jar", "Scalatron.jar", "-browser", "no",
-          "-x", "100", "-y", "100", "-rounds", "5000")), base / "bin") !
+          "-x", "100", "-y", "100", "-steps", "50")), base / "bin") !
     },
     
     testOptions := Seq(
