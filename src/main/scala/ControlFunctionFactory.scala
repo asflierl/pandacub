@@ -29,7 +29,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import eu.flierl.pandacub.{ =/>, State, BotState }
+import eu.flierl.pandacub.{ =/>, OpWithGlobalState, GlobalState }
 import eu.flierl.pandacub.Router.parseAndRoute
 import java.util.concurrent.atomic.AtomicReference
 
@@ -38,11 +38,11 @@ class ControlFunctionFactory {
   
   private[this] def loadState = (s: String) => (botState get, s) 
   
-  private[this] def storeState: State =/> String = {
+  private[this] def storeState: OpWithGlobalState =/> String = {
     case (state, op) =>
       botState set state
       op
   } 
   
-  private[this] lazy val botState = new AtomicReference[BotState](BotState())
+  private[this] lazy val botState = new AtomicReference[GlobalState](GlobalState())
 }

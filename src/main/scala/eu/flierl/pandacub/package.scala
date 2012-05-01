@@ -37,7 +37,8 @@ import scalax.collection.Graph
 import scalax.collection.edge.WUnDiEdge
 
 package object pandacub {
-  type State = (BotState, String)
+  type OpWithGlobalState = (GlobalState, String)
+  type OpWithState = (BotState, String)
   
   type =/>[-A, +B] = PartialFunction[A, B]
   

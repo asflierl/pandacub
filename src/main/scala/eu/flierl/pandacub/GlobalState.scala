@@ -31,16 +31,6 @@
 
 package eu.flierl.pandacub
 
-import Interests._
-
-final class Panda(state: BotState) {
-  def react(time: Int, view: View, energy: Int): OpWithState = decideBasedOn(state, view) nextMove
-  
-  val decideBasedOn = new PointsOfInterest(_: BotState, _: View) with MovementDecision {
-    def nextMove =
-      closest (InterestingFluppet, InterestingBamboo) orElse (
-      farthest(InterestingEmpty))                     orElse (
-      farthest(InterestingFog))                    getOrElse (
-      confused)
-  }
-}
+case class GlobalState(
+  botStates: Map[String, BotState] = Map().withDefaultValue(BotState()), 
+  scores: List[Int] = List())

@@ -50,7 +50,7 @@ abstract class PointsOfInterest(state: BotState, view: View) {
   
   type Ω = (Long, Vec, Interest)
   
-  def best(interests: Seq[Interest], selectFrom: Seq[Ω] => Ω): Option[State] =
+  def best(interests: Seq[Interest], selectFrom: Seq[Ω] => Ω): Option[OpWithState] =
     for {
       desires <- Option(interests flatMap pathsTo) if ! desires.isEmpty
       desire = selectFrom(desires)
@@ -63,7 +63,7 @@ abstract class PointsOfInterest(state: BotState, view: View) {
       d <- paths distanceTo f
     } yield (d, f, interest))(breakOut)
   
-  private def move(desire: Ω): Some[State] = {
+  private def move(desire: Ω): Some[OpWithState] = {
     val (distance, target, interest) = desire
     val (nextStep, nextFocus) = findNextStepAndFocus(distance, target, interest)
    

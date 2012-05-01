@@ -43,7 +43,7 @@ import Show.show
 object Router {
   private[this] object Monitor
   
-  lazy val parseAndRoute: State =/> State = { 
+  lazy val parseAndRoute: OpWithGlobalState =/> OpWithGlobalState = { 
     case (state, fromServer) =>
       try {
         Monitor synchronized unsafeParseAndRoute(state, fromServer)
@@ -54,7 +54,7 @@ object Router {
       } 
     }
   
-  private def unsafeParseAndRoute(state: BotState, fromServer: String): State =
+  private def unsafeParseAndRoute(state: GlobalState, fromServer: String): OpWithGlobalState =
     parseAll(opcode, fromServer) match {
       case Success(op, _) =>
         decideRoute(op, state)
@@ -63,17 +63,21 @@ object Router {
         (state, show(Status("Wat?")))
     }
     
-  private def decideRoute(op: OpcodeFromServer, state: BotState): State = op match {
+  private def decideRoute(op: OpcodeFromServer, state: GlobalState): OpWithGlobalState = op match {
     case Welcome(name, _, apocalypse, round) => 
       (state, show(Status("..zzzZZ")))
       
-    case MasterReact(_, time, view, energy) =>
-      new Panda(state).react(time, view, energy)
+    case MasterReact(name, time, view, energy) =>
+      socialize(name, state, new Panda(state.botStates(name)).react(time, view, energy))
       
     case MiniReact(generation, name, time, view, energy, master) =>
       (state, "")
       
     case Goodbye(energy) =>
       EndOfRound(state, energy)
+  }
+  
+  private def socialize(name: String, global: GlobalState, op: OpWithState): OpWithGlobalState = op match {
+    case (state, op) => (global.copy(botStates = global.botStates + (name -> state)), op)
   }
 }

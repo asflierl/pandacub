@@ -31,8 +31,8 @@
 
 package eu.flierl.pandacub
 
-object EndOfRound extends ((BotState, Int) => State) {
-  def apply(state: BotState, energy: Int): State = {
+object EndOfRound extends ((GlobalState, Int) => OpWithGlobalState) {
+  def apply(state: GlobalState, energy: Int): OpWithGlobalState = {
     val round = state.scores.length + 1
     val scores = energy :: state.scores
     val average = (scores take 20 map (_.toLong) sum) / scores.length
