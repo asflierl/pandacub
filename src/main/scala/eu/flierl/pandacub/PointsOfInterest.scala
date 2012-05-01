@@ -40,7 +40,7 @@ abstract class PointsOfInterest(state: BotState, view: View) {
   private[this] val center = Vec(view.len / 2, view.len / 2)
   private[this] val paths = new ShortestPaths(view graph discouragements, center)
   private[this] def discouragements = state.trailMap ++ enemies
-  private[this] def enemies = view all Snorg flatMap view.neighbours map (_ -> 5L)
+  private[this] def enemies = (view all Snorg).view flatMap view.neighbours map (_ -> 5L)
   
   def closest(interests: Interest*) = best(interests, _.minBy(_._1)) 
   
@@ -87,12 +87,11 @@ abstract class PointsOfInterest(state: BotState, view: View) {
       f @ Focus(v, c, p) <- state.lastFocus    if p >= prio
       d                  <- paths distanceTo v if d > 0
       currentContent      = view area v
-      stillValid          = currentContent == c || currentContent == Fog
-    } yield {
-      if (p == prio) if (d < distance && (distance - d) > 10 && stillValid) f else discoveredFocus
-      else if (stillValid) f
+      stillValid          = currentContent == c || currentContent == Fog || c == Fog
+    } yield 
+      if (p == prio || stillValid) f 
       else discoveredFocus
-    }) getOrElse discoveredFocus
+    ) getOrElse discoveredFocus
   
   
   private[this] def translatedAndFadedTrail(nextStep: Vec): List[Trail] = {
