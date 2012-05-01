@@ -80,6 +80,14 @@ final class ShortestPaths(val graph: G, center: Vec) {
     else if (previous(n) == from) Some(n)
     else firstStepTo(previous(n))
     
+  def pathToVec(n: Vec, p: List[graph.NodeT] = List()): List[graph.NodeT] =
+    (graph find n).toList flatMap (x => pathTo(x))
+  
+  @tailrec
+  def pathTo(n: graph.NodeT, p: List[graph.NodeT] = List()): List[graph.NodeT] =
+    if (! previous.contains(n)) p
+    else pathTo(previous(n), n :: p)
+    
   private[this] object Ord extends Comparator[graph.NodeT] {
     private[this] val inf = Int.MaxValue.toLong
     

@@ -32,10 +32,11 @@
 package eu.flierl.pandacub
 
 import collection.breakOut
+import Cells.Cell
 
-case class BotState(last: List[Trail] = List()) {
-  lazy val trailMap: Map[Vec, Long] = 
-    last.map(t => t.cell -> t.discouragement)(breakOut) 
+case class BotState(trail: List[Trail] = List(), lastFocus: Option[Focus] = None) {
+  lazy val trailMap: Map[Vec, Long] = trail.map(t => t.vec -> t.discouragement)(breakOut) 
 }
 
-case class Trail(cell: Vec, discouragement: Long)
+case class Trail(vec: Vec, discouragement: Long)
+case class Focus(vec: Vec, cell: Cell, prio: Int)
