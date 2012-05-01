@@ -3,6 +3,8 @@ package eu.flierl.pandacub
 case class Vec(x: Int, y: Int) {
   def +(v: Vec) = Vec(x + v.x, y + v.y)
   def -(v: Vec) = Vec(x - v.x, y - v.y)
+  
+  override def hashCode = (17 * 31 + x) * 31 + y
 }
 
 object Vec extends ((Int, Int) => Vec) {

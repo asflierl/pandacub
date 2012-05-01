@@ -6,19 +6,20 @@ import scalax.collection.GraphPredef._
 import scalax.collection.GraphEdge._
 import scalax.collection.edge.Implicits._
 import scalax.collection.edge.WUnDiEdge
+import collection.breakOut
 
 final case class View(len: Int, area: Map[Vec, Cell]) {
   lazy val inverse = area.groupBy(_._2).mapValues(_.keySet)
   
   def all(c: Cell): Set[Vec] = inverse.getOrElse(c, Set())
   
-  def graph(last: Map[Vec, Long] = Map()): G = Graph((for {
-    v <- area.keys.toSeq filter isSafe
+  def graph(last: Map[Vec, Long] = Map()): G = (for {
+    v <- area.keys filter isSafe
     n <- southEastNeighboursOf(v)
-  } yield v ~ n % last.get(v).orElse(last.get(n)).getOrElse(1L)):_*)
+  } yield v ~ n % last.get(v).orElse(last.get(n)).getOrElse(1L))(breakOut)
   
   private[this] def southEastNeighboursOf(v: Vec): Seq[Vec] =
-    Seq(Vec(1, 0), Vec(0, 1), Vec(1, 1), Vec(1, -1)) map (v+) filter area.contains filter isSafe
+    List(Vec(1, 0), Vec(0, 1), Vec(1, 1), Vec(1, -1)) map (v+) filter area.contains filter isSafe
   
   def isSafe(v: Vec) = area(v) match {
     case Wall | Tiger | Kitty | Shroom | Snorg => false
