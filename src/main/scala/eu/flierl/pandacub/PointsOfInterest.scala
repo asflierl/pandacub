@@ -37,8 +37,10 @@ import Show.show
 import collection.breakOut
 
 abstract class PointsOfInterest(state: BotState, view: View) {
-  private val center = Vec(view.len / 2, view.len / 2)
-  private val paths = new ShortestPaths(view.graph(state.trailMap), center)
+  private[this] val center = Vec(view.len / 2, view.len / 2)
+  private[this] val paths = new ShortestPaths(view graph discouragements, center)
+  private[this] def discouragements = state.trailMap ++ enemies
+  private[this] def enemies = view all Snorg flatMap view.neighbours map (_ -> 50L)
   
   def closest(interests: Interest*) = best(interests, _.minBy(_._1)) 
   
@@ -69,7 +71,7 @@ abstract class PointsOfInterest(state: BotState, view: View) {
           show(Move(nextStep - center) +: Status(interest.status))))
   }
   
-  private def findNextStepAndFocus(distance: Long, target: Vec, interest: Interest): (Vec, Focus) = {
+  private[this] def findNextStepAndFocus(distance: Long, target: Vec, interest: Interest): (Vec, Focus) = {
     val discoveredFocus = Focus(target, interest cell, interest prio)
     
     val focus = previousOrDiscoveredFocus(interest prio, distance, discoveredFocus)
@@ -80,20 +82,20 @@ abstract class PointsOfInterest(state: BotState, view: View) {
     (nextStep, nextFocus)
   }
   
-  private def previousOrDiscoveredFocus(prio: Int, distance: Long, discoveredFocus: Focus): Focus =
+  private[this] def previousOrDiscoveredFocus(prio: Int, distance: Long, discoveredFocus: Focus): Focus =
     (for {
       f @ Focus(v, c, p) <- state.lastFocus    if p >= prio
       d                  <- paths distanceTo v if d > 0
       currentContent      = view area v
       stillValid          = currentContent == c || currentContent == Fog
     } yield {
-      if (p == prio) if (d < distance && (distance - d) > 3 && stillValid) f else discoveredFocus
+      if (p == prio) if (d < distance && (distance - d) > 5 && stillValid) f else discoveredFocus
       else if (stillValid) f
       else discoveredFocus
     }) getOrElse discoveredFocus
   
   
-  private def translatedAndFadedTrail(nextStep: Vec): List[Trail] = {
+  private[this] def translatedAndFadedTrail(nextStep: Vec): List[Trail] = {
     val first = Trail(center, (view.len * 3L) / 2L + 2L)
     val nextTrail = first :: state.trail.takeWhile(_.discouragement > 0)
     
@@ -102,5 +104,5 @@ abstract class PointsOfInterest(state: BotState, view: View) {
     } 
   }
   
-  private def translate(v: Vec, t: Vec) = v + center - t
+  private[this] def translate(v: Vec, t: Vec) = v + center - t
 }
