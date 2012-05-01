@@ -43,41 +43,42 @@ import Show.show
 object Router {
   private[this] object Monitor
   
-  lazy val parseAndRoute: OpWithGlobalState =/> OpWithGlobalState = { 
+  lazy val parseAndRoute: OpWithGlobalState =/> OpWithGlobalUpdate = { 
     case (state, fromServer) =>
       try {
         Monitor synchronized unsafeParseAndRoute(state, fromServer)
       } catch {
         case exc: Exception =>
           exc.printStackTrace
-          (state, show(Status("oh noooo")))
+          (identity, show(Status("oh noooo")))
       } 
     }
   
-  private def unsafeParseAndRoute(state: GlobalState, fromServer: String): OpWithGlobalState =
+  private def unsafeParseAndRoute(state: GlobalState, fromServer: String): OpWithGlobalUpdate =
     parseAll(opcode, fromServer) match {
       case Success(op, _) =>
         decideRoute(op, state)
       case f @ Failure(_,_) => 
         println(show(FailureDetail(f, fromServer)))
-        (state, show(Status("Wat?")))
+        (identity, show(Status("Wat?")))
     }
     
-  private def decideRoute(op: OpcodeFromServer, state: GlobalState): OpWithGlobalState = op match {
+  private def decideRoute(op: OpcodeFromServer, state: GlobalState): OpWithGlobalUpdate = op match {
     case Welcome(name, _, apocalypse, round) => 
-      (state, show(Status("..zzzZZ")))
+      (identity, show(Status("..zzzZZ")))
       
     case MasterReact(name, time, view, energy) =>
-      socialize(name, state, new Panda(state botStates name).react(time, view, energy))
+      socialize(name, new Panda(state botStates name).react(time, view, energy))
       
     case MiniReact(generation, name, time, view, energy, master) =>
-      socialize(name, state, new Cub(state botStates name).react(time, view, energy, master))
+      socialize(name, new Cub(state botStates name).react(time, view, energy, master))
       
     case Goodbye(energy) =>
       EndOfRound(state, energy)
   }
   
-  private def socialize(name: String, global: GlobalState, op: OpWithState): OpWithGlobalState = op match {
-    case (state, op) => (global.copy(botStates = global.botStates + (name -> state)), op)
+  private def socialize(name: String, op: OpWithState): OpWithGlobalUpdate = op match {
+    case (state, op) => 
+      (g => (g.copy(botStates = g.botStates + (name -> state))), op)
   }
 }

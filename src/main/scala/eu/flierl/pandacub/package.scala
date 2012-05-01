@@ -37,6 +37,8 @@ import scalax.collection.Graph
 import scalax.collection.edge.WUnDiEdge
 
 package object pandacub {
+  type GlobalUpdate = GlobalState => GlobalState
+  type OpWithGlobalUpdate = (GlobalUpdate, String)
   type OpWithGlobalState = (GlobalState, String)
   type OpWithState = (BotState, String)
   

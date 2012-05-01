@@ -91,7 +91,8 @@ abstract class PointsOfInterest(state: BotState, view: View) {
       stillValid          = currentContent == c || currentContent == Fog || c == Fog
     } yield
       if (discoveredFocus.cell == Panda) discoveredFocus
-      else if (p == prio || stillValid) f 
+      else if (p == prio && stillValid) f
+      else if (stillValid) f
       else discoveredFocus
     ) getOrElse discoveredFocus
   
