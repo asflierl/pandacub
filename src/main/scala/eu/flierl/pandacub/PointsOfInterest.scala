@@ -32,6 +32,7 @@
 package eu.flierl.pandacub
 
 import Cells._
+import Interests._
 import Show.show
 import collection.breakOut
 
@@ -39,40 +40,41 @@ abstract class PointsOfInterest(state: BotState, view: View) {
   private val center = Vec(view.len / 2, view.len / 2)
   private val paths = new ShortestPaths(view.graph(state.trailMap), center)
   
-  def closest(cell: Cell, status: String, prio: Int) = best(cell, status, prio, _.minBy(_._1)) 
+  def closest(interests: Interest*) = best(interests, _.minBy(_._1)) 
   
-  def farthest(cell: Cell, status: String, prio: Int) = best(cell, status, prio, _.maxBy(_._1)) 
+  def farthest(interests: Interest*) = best(interests, _.maxBy(_._1)) 
   
   val confused = (state, show(Status("*confused*")))
   
-  type Ω = (Long, Vec) // distance and target
+  type Ω = (Long, Vec, Interest)
   
-  def best(cell: Cell, status: String, prio: Int, select: Seq[Ω] => Ω): Option[State] = {
-    val cells = pathsTo(cell)
-    if (cells isEmpty) None
-    else move(select, status, cells, prio)
-  }
+  def best(interests: Seq[Interest], selectFrom: Seq[Ω] => Ω): Option[State] =
+    for {
+      desires <- Option(interests flatMap pathsTo) if ! desires.isEmpty
+      desire = selectFrom(desires)
+      nextState <- move(desire)
+    } yield nextState
   
-  private def pathsTo(cell: Cell): Seq[Ω] = 
+  private def pathsTo(interest: Interest): Seq[Ω] = 
     (for {
-      f <- view all cell
+      f <- view all interest.cell
       d <- paths distanceTo f
-    } yield (d, f))(breakOut)
+    } yield (d, f, interest))(breakOut)
   
-  private def move(select: Seq[Ω] => Ω, status: String, cells: Seq[Ω], prio: Int): Some[State] = {
-    val (nextStep, nextFocus) = findNextStepAndFocus(select, cells, prio)
+  private def move(desire: Ω): Some[State] = {
+    val (distance, target, interest) = desire
+    val (nextStep, nextFocus) = findNextStepAndFocus(distance, target, interest)
    
     Some((state.copy(trail = translatedAndFadedTrail(nextStep), lastFocus = Some(nextFocus)), 
-          show(Move(nextStep - center) +: Status(status))))
+          show(Move(nextStep - center) +: Status(interest.status))))
   }
   
-  private def findNextStepAndFocus(select: Seq[Ω] => Ω, cells: Seq[Ω], prio: Int): (Vec, Focus) = {
-    val (distance, target) = select(cells)
-    val discoveredFocus = Focus(target, view area target, prio)
+  private def findNextStepAndFocus(distance: Long, target: Vec, interest: Interest): (Vec, Focus) = {
+    val discoveredFocus = Focus(target, interest cell, interest prio)
     
-    val focus = previousOrDiscoveredFocus(prio, distance, discoveredFocus)
+    val focus = previousOrDiscoveredFocus(interest prio, distance, discoveredFocus)
     
-    val nextStep = paths.firstStepToVec(focus.vec).get.value
+    val nextStep = paths.firstStepToVec(focus vec).get.value
     val nextFocus = focus copy (vec = translate(focus vec, nextStep))
     
     (nextStep, nextFocus)
@@ -85,7 +87,7 @@ abstract class PointsOfInterest(state: BotState, view: View) {
       currentContent      = view area v
       stillValid          = currentContent == c || currentContent == Fog
     } yield {
-      if (p == prio) if (d < distance && stillValid) f else discoveredFocus
+      if (p == prio) if (d < distance && (distance - d) > 3 && stillValid) f else discoveredFocus
       else if (stillValid) f
       else discoveredFocus
     }) getOrElse discoveredFocus
