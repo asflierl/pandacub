@@ -9,49 +9,13 @@ import scalax.collection.GraphEdge._
 import scalax.collection.edge.Implicits._
 
 final class Panda(state: BotState) {
-  def react(time: Int, view: View, energy: Int): State = {
-    val center = Vec(view.len / 2, view.len / 2)
-    val paths = new ShortestPaths(view.graph(state.trailMap), center)
-    
-//    println("\n")
-//    println(view.toString)
-//    println("\n")
-    
-    closestFood(view, center, paths).orElse(
-      farthest(Fog, "exploring", view, center, paths)).orElse(
-      farthest(Empty, "roaming", view, center, paths)).getOrElse(
-      (state, show(Status("nowhere to go"))))
-  }
+  def react(time: Int, view: View, energy: Int): State = decideBasedOn(state, view) nextMove
   
-  def closestFood(view: View, center: Vec, paths: ShortestPaths): Option[State] = {
-    val food = for {
-      f <- (view.all(Bamboo) ++ view.all(Fluppet)).toSeq
-      d <- paths.distanceTo(f)
-    } yield (d, f)
-    
-    if (food isEmpty) None
-    else move(_.minBy(_._1), "*munch*", food, center, paths)
-  }
-  
-  def farthest(cell: Cell, status: String, view: View, center: Vec, paths: ShortestPaths): Option[State] = {
-    val cells = for {
-      c <- view.all(cell).toSeq
-      d <- paths.distanceTo(c)
-    } yield (d, c)
-    
-    if (cells isEmpty) None
-    else move(_.maxBy(_._1), status, cells, center, paths)
-  }
-  
-  def move(order: Seq[(Long, Vec)] => (Long, Vec), status: String, 
-           cells: Seq[(Long, Vec)], center: Vec, paths: ShortestPaths): Some[State] = {
-    val nextCell = order(cells)._2
-    val target = paths.firstStepToVec(nextCell).get.value
-    Some((state.copy(last = (Trail(center) :: state.last.take(15)) map { t =>
-      t.copy(cell = t.cell + center - target, 
-            discouragement = t.discouragement - 2L)
-    }), show(Move(target - center) +: Status(status))))
-  }
+  val decideBasedOn = new PointsOfInterest(_: BotState, _: View) with MovementDecision {
+    def nextMove =
+      closestFood.orElse(
+        farthest(Fog, "exploring")).orElse(
+        farthest(Empty, "roaming")).getOrElse(
+        (state, show(Status("nowhere to go"))))
+  }  
 }
-
-
