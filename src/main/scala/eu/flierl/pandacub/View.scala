@@ -39,7 +39,8 @@ import scalax.collection.edge.Implicits._
 import scalax.collection.edge.WUnDiEdge
 import collection.breakOut
 
-final case class View(len: Int, area: Map[Vec, Cell]) {
+final case class View(len: Int, area: Map[Vec, Cell], exclude: Set[Cell] = Set()) {
+  val center = Vec(len / 2, len / 2)
   lazy val inverse = area.groupBy(_._2).mapValues(_.keySet)
   
   def all(c: Cell): Set[Vec] = inverse.getOrElse(c, Set())
@@ -60,10 +61,12 @@ final case class View(len: Int, area: Map[Vec, Cell]) {
          Vec(-1, 0), Vec(0, -1), Vec(-1, -1), Vec(-1,  1)
     ) map (v+) filter area.contains filter isSafe
   
-  def isSafe(v: Vec) = area(v) match {
+  def isSafe(v: Vec) = if (v == center) true else area(v) match {
     case Wall | Tiger | Kitty | Shroom | Snorg => false
-    case _ => true
+    case c => ! exclude.contains(c)
   }
+  
+  def exclude(ex: Cell*): View = copy(exclude = exclude ++ ex.toSet)
   
   override def toString = Show.show(this).sliding(len, len).mkString("\n")
 }

@@ -31,14 +31,20 @@
 
 package eu.flierl.pandacub
 
-import Cells._
+import Interests._
+import Show.show
+import Cells.{ Panda, Cub }
 
-object Interests {
-  sealed class Interest(val cell: Cell, val status: String, val prio: Int)
-
-  case object InterestingPanda   extends Interest(Panda,   "*cuddle*",  4)
-  case object InterestingFluppet extends Interest(Fluppet, "*hug*",     3)
-  case object InterestingBamboo  extends Interest(Bamboo,  "*munch*",   2)
-  case object InterestingEmpty   extends Interest(Empty,   "*roam*",    1)
-  case object InterestingFog     extends Interest(Fog,     "*explore*", 0)
+final class Cub(state: BotState) {
+  def react(time: Int, view: View, energy: Int, master: Vec): OpWithState =
+    decideBasedOn(state, if (energy > 2000) view exclude Cub else view exclude (Panda, Cub)) nextMove
+  
+  val decideBasedOn = new PointsOfInterest(_: BotState, _: View) with MovementDecision {
+    def nextMove =
+      closest (InterestingPanda)                       orElse (
+      closest (InterestingFluppet, InterestingBamboo)) orElse (
+      farthest(InterestingEmpty))                      orElse (
+      farthest(InterestingFog))                     getOrElse (
+      confused)
+  }
 }

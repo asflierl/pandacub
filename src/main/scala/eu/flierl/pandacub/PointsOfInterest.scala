@@ -37,7 +37,8 @@ import Show.show
 import collection.breakOut
 
 abstract class PointsOfInterest(state: BotState, view: View) {
-  private[this] val center = Vec(view.len / 2, view.len / 2)
+  import view.center
+  
   private[this] val paths = new ShortestPaths(view graph discouragements, center)
   private[this] def discouragements = state.trailMap ++ enemies
   private[this] def enemies = (view all Snorg).view flatMap view.neighbours map (_ -> 5L)

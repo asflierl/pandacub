@@ -68,10 +68,10 @@ object Router {
       (state, show(Status("..zzzZZ")))
       
     case MasterReact(name, time, view, energy) =>
-      socialize(name, state, new Panda(state.botStates(name)).react(time, view, energy))
+      socialize(name, state, new Panda(state botStates name).react(time, view, energy))
       
     case MiniReact(generation, name, time, view, energy, master) =>
-      (state, "")
+      socialize(name, state, new Cub(state botStates name).react(time, view, energy, master))
       
     case Goodbye(energy) =>
       EndOfRound(state, energy)
