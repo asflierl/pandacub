@@ -41,7 +41,10 @@ object PandaCubBuild extends Build {
   lazy val root = Project(
     id = "pandacub",
     base = file("."),
-    settings = Project.defaultSettings ++ assemblySettings ++ botSettings)
+    settings = Project.defaultSettings 
+            ++ assemblySettings 
+            ++ botSettings
+            ++ addArtifact(Artifact("pandacub", "zip", "zip"), release).settings)
     
   def botSettings: Seq[Setting[_]] = Seq(
     version := "1.0",
@@ -53,6 +56,12 @@ object PandaCubBuild extends Build {
     EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource,
     
     assembleArtifact in packageScala := false,
+    
+    release <<= (assembly in Compile, crossTarget, name, version) map { (jar, target, name, version) =>
+      val zip = target / "%s-%s.zip".format(name, version)
+      IO.zip(Seq((jar, name + "/" + jar.getName), (file("license.txt"), "license.txt")), zip)
+      zip
+    },
     
     scalatronDir := file("Scalatron"),
     
@@ -91,4 +100,5 @@ object PandaCubBuild extends Build {
 
   val scalatronDir = SettingKey[File]("scalatron-dir", "base directory of an existing Scalatron installation")
   val play = TaskKey[Unit]("play", "recompiles, packages and installs the bot, then starts Scalatron")
+  val release = TaskKey[File]("release", "zips the assembled product along with the license")
 }
