@@ -10,7 +10,6 @@ import scala.annotation.tailrec
 final class ShortestPaths(val graph: G, center: Vec) {
   private val dist = Map[graph.NodeT, Long]()
   private val previous = Map[graph.NodeT, graph.NodeT]()
-  
   private val from = graph get center
   
   dist.put(from, 0)
@@ -31,22 +30,10 @@ final class ShortestPaths(val graph: G, center: Vec) {
       if (((dist contains neighbour) && newDistance < dist(neighbour)) 
           || ! (dist contains neighbour)) {
         q remove neighbour
-        dist.put(neighbour, newDistance)
-        previous.put(neighbour, closest)
+        dist put (neighbour, newDistance)
+        previous put (neighbour, closest)
         q add neighbour
       }
-    }
-  }
-  
-  object Ord extends Comparator[graph.NodeT] {
-    private[this] val inf = Int.MaxValue.toLong
-    
-    def compare(a: graph.NodeT, b: graph.NodeT) = {
-      val weights = implicitly[Ordering[Long]].compare(
-        dist.getOrElse(a, inf), dist.getOrElse(b, inf))
-      
-      if (weights != 0) weights
-      else implicitly[Ordering[Vec]].compare(a.value, b.value)
     }
   }
   
@@ -60,4 +47,16 @@ final class ShortestPaths(val graph: G, center: Vec) {
     if (! previous.contains(n)) None
     else if (previous(n) == from) Some(n)
     else firstStepTo(previous(n))
+    
+  private[this] object Ord extends Comparator[graph.NodeT] {
+    private[this] val inf = Int.MaxValue.toLong
+    
+    def compare(a: graph.NodeT, b: graph.NodeT) = {
+      val weights = implicitly[Ordering[Long]].compare(
+        dist.getOrElse(a, inf), dist.getOrElse(b, inf))
+      
+      if (weights != 0) weights
+      else implicitly[Ordering[Vec]].compare(a.value, b.value)
+    }
+  }
 }
