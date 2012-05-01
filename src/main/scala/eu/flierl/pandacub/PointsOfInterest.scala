@@ -41,17 +41,22 @@ abstract class PointsOfInterest(state: BotState, view: View) {
   
   private[this] val paths = new ShortestPaths(view graph discouragements, center)
   private[this] def discouragements = state.trailMap ++ enemies
-  private[this] def enemies = (view all Snorg).view flatMap view.neighbours map (_ -> 5L)
+  private[this] def enemies = (view all Snorg).view flatMap view.neighbours map (_ -> 25L)
   
-  def closest(interests: Interest*) = best(interests, _.minBy(_._1)) 
+  def closest(interests: Interest*) = best(interests, _ => true, _.minBy(_._1)) 
   
-  def farthest(interests: Interest*) = best(interests, _.maxBy(_._1)) 
+  def farthest(interests: Interest*) = best(interests, _ => true, _.maxBy(_._1))
+  
+  def median(interests: Interest*) = best(interests, view isEdge, aroundMedian)
+  
+  private[this] def aroundMedian(s: Seq[Ω]): Ω = selectRandomly(
+    s.sortBy(_._1).zipWithIndex.filter(t => math.abs(t._2 - (s.size / 2)) < 5).map(_._1))
   
   val confused = (state, show(Status("*confused*")))
   
-  type Ω = (Long, Vec, Interest)
+  type Ω = (Long, Vec, Interest) // distance, target, interest
   
-  def best(interests: Seq[Interest], selectFrom: Seq[Ω] => Ω): Option[OpWithState] =
+  def best(interests: Seq[Interest], incl: Vec => Boolean, selectFrom: Seq[Ω] => Ω): Option[OpWithState] =
     for {
       desires <- Option(interests flatMap pathsTo) if ! desires.isEmpty
       desire = selectFrom(desires)

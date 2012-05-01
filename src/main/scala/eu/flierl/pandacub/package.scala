@@ -35,6 +35,7 @@ import scala.util.parsing.input.Reader
 import scala.util.parsing.input.CharSequenceReader
 import scalax.collection.Graph
 import scalax.collection.edge.WUnDiEdge
+import scala.util.Random.nextInt
 
 package object pandacub {
   type GlobalUpdate = GlobalState => GlobalState
@@ -51,4 +52,9 @@ package object pandacub {
   def ??? = throw new UnsupportedOperationException("not yet implemented")
   
   def sqrt(n: Int): Int = math.sqrt(n).toInt
+  
+  def selectRandomly[A](s: Seq[A]): A = {
+    require(! s.isEmpty, "sequence must not be empty")
+    s(nextInt(s.size))
+  }
 }

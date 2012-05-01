@@ -44,7 +44,9 @@ final class Cub(state: BotState) {
       def nextMove =
         closest (InterestingPanda)                       orElse (
         closest (InterestingFluppet, InterestingBamboo)) orElse (
+        median  (InterestingEmpty))                      orElse (
         farthest(InterestingEmpty))                      orElse (
+        median  (InterestingFog))                        orElse (
         farthest(InterestingFog))                     getOrElse (
         confused)
     }

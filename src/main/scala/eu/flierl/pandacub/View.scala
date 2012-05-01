@@ -66,6 +66,8 @@ final case class View(len: Int, area: Map[Vec, Cell], exclude: Set[Cell] = Set()
     case c => ! exclude.contains(c)
   }
   
+  def isEdge(v: Vec) = v.x < 3 || v.x > len - 4 || v.y < 3 || v.y > len - 4
+  
   def exclude(ex: Cell*): View = copy(exclude = exclude ++ ex.toSet)
   
   override def toString = Show.show(this).sliding(len, len).mkString("\n")

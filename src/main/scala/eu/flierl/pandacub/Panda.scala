@@ -51,7 +51,9 @@ final class Panda(state: BotState) {
     new PointsOfInterest(_: BotState, _: View) with MovementDecision {
       def nextMove =
         closest (InterestingFluppet, InterestingBamboo) orElse (
+        median  (InterestingEmpty))                     orElse (
         farthest(InterestingEmpty))                     orElse (
+        median  (InterestingFog))                       orElse (
         farthest(InterestingFog))                    getOrElse (
         confused)
     }
