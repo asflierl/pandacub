@@ -30,6 +30,8 @@ object PandaCubBuild extends Build {
     
     play <<= (scalatronDir, name, javaOptions, assembly in Compile) map {
       (base, name, javaOptions, botJar) =>
+        require(base exists, "The setting '%s' must point to the base directory of an existing " +
+      		"Scalatron installation.".format(scalatronDir.key.label))
         IO delete (base / "bots" / name)
         IO copyFile (botJar, base / "bots" / name / "ScalatronBot.jar")
         Process("java" +: (javaOptions ++ Seq("-jar", "Scalatron.jar", "-browser", "no",
@@ -56,6 +58,6 @@ object PandaCubBuild extends Build {
       "org.hamcrest" % "hamcrest-all" % "1.1" % "test",
       "org.mockito" % "mockito-all" % "1.9.0" % "test"))
 
-  val scalatronDir = SettingKey[File]("scalatron-dir")
-  val play = TaskKey[Unit]("play")
+  val scalatronDir = SettingKey[File]("scalatron-dir", "base directory of an existing Scalatron installation")
+  val play = TaskKey[Unit]("play", "recompiles, packages and installs the bot, then starts Scalatron")
 }

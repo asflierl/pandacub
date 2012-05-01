@@ -7,6 +7,7 @@ import java.util.Comparator
 import collection.JavaConverters._
 import scala.annotation.tailrec
 
+/** Implements Dijkstra's algorithm on top of an ordered tree, O(V * log(V) + E). */
 final class ShortestPaths(val graph: G, center: Vec) {
   private val dist = Map[graph.NodeT, Long]()
   private val previous = Map[graph.NodeT, graph.NodeT]()

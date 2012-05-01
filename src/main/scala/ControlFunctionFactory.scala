@@ -1,12 +1,6 @@
-package scalatron.botwar.botPlugin
-
-import eu.flierl.pandacub.Panda
-import eu.flierl.pandacub.BotState
-import eu.flierl.pandacub.State
-import eu.flierl.pandacub.=/>
-import java.util.concurrent.atomic.AtomicReference
-import eu.flierl.pandacub.BotState
+import eu.flierl.pandacub.{ =/>, State, BotState }
 import eu.flierl.pandacub.Router.parseAndRoute
+import java.util.concurrent.atomic.AtomicReference
 
 class ControlFunctionFactory {
   lazy val create: String => String = loadState andThen parseAndRoute andThen storeState 
