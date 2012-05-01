@@ -7,4 +7,4 @@ case class BotState(last: List[Trail] = List()) {
     last.map(t => t.cell -> t.discouragement)(breakOut) 
 }
 
-case class Trail(cell: Vec, discouragement: Long = 33L)
+case class Trail(cell: Vec, discouragement: Long)

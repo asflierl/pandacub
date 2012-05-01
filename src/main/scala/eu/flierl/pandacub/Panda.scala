@@ -13,8 +13,8 @@ final class Panda(state: BotState) {
   
   val decideBasedOn = new PointsOfInterest(_: BotState, _: View) with MovementDecision {
     def nextMove =
-      closest (Bamboo,  "*munch*")       orElse (
-      closest (Fluppet, "*hug*"))        orElse (
+      closest (Fluppet, "*hug*")         orElse (
+      closest (Bamboo,  "*munch*"))      orElse (
       farthest(Fog,     "*explore*"))    orElse (
       farthest(Empty,   "*roam*"))    getOrElse (
       confused)
