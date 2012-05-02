@@ -47,7 +47,7 @@ object PandaCubBuild extends Build {
             ++ addArtifact(Artifact("pandacub", "zip", "zip"), release).settings)
     
   def botSettings: Seq[Setting[_]] = Seq(
-    version := "2.1.1",
+    version := "2.1.2",
     organization := "eu.flierl",
     
     scalaVersion := "2.9.2",
@@ -59,7 +59,7 @@ object PandaCubBuild extends Build {
     
     release <<= (assembly in Compile, crossTarget, name, version) map { (jar, target, name, version) =>
       val zip = target / "%s-%s.zip".format(name, version)
-      IO.zip(Seq((jar, name + "/" + jar.getName), (file("license.txt"), "license.txt")), zip)
+      IO.zip(Seq((jar, name + "/ScalatronBot.jar"), (file("license.txt"), "license.txt")), zip)
       zip
     },
     

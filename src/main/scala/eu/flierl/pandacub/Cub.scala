@@ -52,6 +52,6 @@ final class Cub(state: BotState) {
     }
   
   private[this] def altered(view: View, energy: Int): View = 
-    if (energy > 2500) view exclude Cub 
+    if (energy > 5000) view exclude Cub 
     else view exclude (Panda, Cub) 
 }
