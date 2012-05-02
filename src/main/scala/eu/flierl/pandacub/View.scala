@@ -40,7 +40,7 @@ final case class View(len: Int, area: Map[Vec, Cell], exclude: Set[Cell] = Set()
   
   def all(c: Cell): Set[Vec] = inverse.getOrElse(c, Set())
   
-  def graph(discouragements: Map[Vec, Long] = Map()): MatrixGraph = {
+  def graph(discouragements: Map[Vec, Long] = Map()): Graph = {
     val g = new MatrixGraph(len)
     for {
       v <- area.keys filter isSafe
