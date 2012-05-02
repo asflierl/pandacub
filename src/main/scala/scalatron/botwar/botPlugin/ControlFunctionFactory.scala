@@ -29,22 +29,25 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import eu.flierl.pandacub.{ =/>, OpWithGlobalUpdate, GlobalState }
+package scalatron.botwar.botPlugin
+
 import eu.flierl.pandacub.Router.parseAndRoute
-import java.util.concurrent.atomic.AtomicReference
+import eu.flierl.pandacub.{=/> => =/>}
+import eu.flierl.pandacub.OpWithGlobalUpdate
+import eu.flierl.pandacub.GlobalState
 
 class ControlFunctionFactory {
   lazy val create: String => String = loadState andThen parseAndRoute andThen storeState 
   
-  private[this] def loadState = (s: String) => monitor synchronized { (botState, s) } 
+  private[this] def loadState = (s: String) => Monitor synchronized { (botState, s) } 
   
   private[this] def storeState: OpWithGlobalUpdate =/> String = {
-    case (update, op) => monitor synchronized {
+    case (update, op) => Monitor synchronized {
       botState = update(botState)
       op
     }
   } 
   
-  private[this] val monitor = new Object
+  private[this] object Monitor
   private[this] var botState = GlobalState()
 }

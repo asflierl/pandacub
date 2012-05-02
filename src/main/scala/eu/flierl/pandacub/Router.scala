@@ -64,7 +64,7 @@ object Router {
     }
     
   private def decideRoute(op: OpcodeFromServer, state: GlobalState): OpWithGlobalUpdate = op match {
-    case Welcome(name, _, apocalypse, round) => 
+    case Welcome(name, dir, apocalypse, round) =>
       (identity, show(Status("..zzzZZ")))
       
     case MasterReact(name, time, view, energy) =>

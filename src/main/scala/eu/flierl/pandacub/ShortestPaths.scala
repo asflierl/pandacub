@@ -40,63 +40,64 @@ import scala.annotation.tailrec
 
 /** Implements Dijkstra's algorithm on top of an ordered tree, O(V * log(V) + E). */
 final class ShortestPaths(val graph: G, center: Vec) {
-  private val dist = Map[graph.NodeT, Long]()
-  private val previous = Map[graph.NodeT, graph.NodeT]()
-  private val from = graph get center
+  private val dist = Map[Vec, Long]()
+  private val previous = Map[Vec, Vec]()
+  private val from = (graph get center).value
   
   dist.put(from, 0)
   
   private val q = new TreeSet(Ord)
   
-  q addAll graph.nodes.asJava
+  q addAll graph.nodes.map(_.value).asJava
   
   while (! q.isEmpty && dist.contains(q.first)) {
     val closest = q.pollFirst
-
-    for { 
-      neighbour <- (closest outNeighbors) if q contains neighbour
-      edge <- closest outgoingTo neighbour
-    } {
-      val newDistance = dist(closest) + edge.weight 
+    val closestNode = graph get closest
+    val outEdges = closestNode.outgoing.iterator
+    
+    while (outEdges hasNext) {
+      val edge = outEdges.next
+      val neighbour = (if (edge.head == closestNode) edge.last else edge.head).value
       
-      if (((dist contains neighbour) && newDistance < dist(neighbour)) 
-          || ! (dist contains neighbour)) {
-        q remove neighbour
-        dist put (neighbour, newDistance)
-        previous put (neighbour, closest)
-        q add neighbour
+      if (q contains neighbour) {
+        val newDistance = dist(closest) + edge.weight 
+      
+        if (((dist contains neighbour) && newDistance < dist(neighbour)) 
+            || ! (dist contains neighbour)) {
+          q remove neighbour
+          dist put (neighbour, newDistance)
+          previous put (neighbour, closest)
+          q add neighbour
+        }
       }
     }
   }
   
-  def distanceTo(n: Vec): Option[Long] = graph find n flatMap dist.get
+  def distanceTo(v: Vec): Option[Long] = graph find v flatMap (n => dist.get(n.value))
       
-  def firstStepToVec(n: Vec): Option[graph.NodeT] =
-    graph find n flatMap firstStepTo
-    
   @tailrec
-  def firstStepTo(n: graph.NodeT): Option[graph.NodeT] =
+  def firstStepTo(n: Vec): Option[Vec] =
     if (! previous.contains(n)) None
     else if (previous(n) == from) Some(n)
     else firstStepTo(previous(n))
     
-  def pathToVec(n: Vec, p: List[graph.NodeT] = List()): List[graph.NodeT] =
-    (graph find n).toList flatMap (x => pathTo(x))
-  
   @tailrec
-  def pathTo(n: graph.NodeT, p: List[graph.NodeT] = List()): List[graph.NodeT] =
+  def pathTo(n: Vec, p: List[Vec] = List()): List[Vec] =
     if (! previous.contains(n)) p
     else pathTo(previous(n), n :: p)
     
-  private[this] object Ord extends Comparator[graph.NodeT] {
+  private[this] object Ord extends Comparator[Vec] {
     private[this] val inf = Int.MaxValue.toLong
     
-    def compare(a: graph.NodeT, b: graph.NodeT) = {
-      val weights = implicitly[Ordering[Long]].compare(
-        dist.getOrElse(a, inf), dist.getOrElse(b, inf))
+    def compare(a: Vec, b: Vec) = {
+      val weights = implicitly[Ordering[Long]].compare(grab(a), grab(b))
       
       if (weights != 0) weights
-      else implicitly[Ordering[Vec]].compare(a.value, b.value)
+      else implicitly[Ordering[Vec]].compare(a, b)
+    }
+    
+    @inline private[this] def grab(a: Vec) = {
+      dist.getOrElse(a, inf)
     }
   }
 }

@@ -82,7 +82,7 @@ abstract class PointsOfInterest(state: BotState, view: View) {
     
     val focus = previousOrDiscoveredFocus(interest prio, distance, discoveredFocus)
     
-    val nextStep = paths.firstStepToVec(focus vec).get.value
+    val nextStep = paths.firstStepTo(focus vec).get
     val nextFocus = focus copy (vec = translate(focus vec, nextStep))
     
     (nextStep, nextFocus)
