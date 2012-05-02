@@ -47,7 +47,7 @@ object PandaCubBuild extends Build {
             ++ addArtifact(Artifact("pandacub", "zip", "zip"), release).settings)
     
   def botSettings: Seq[Setting[_]] = Seq(
-    version := "2.1.4",
+    version := "2.2",
     organization := "eu.flierl",
     
     scalaVersion := "2.9.2",
@@ -89,8 +89,6 @@ object PandaCubBuild extends Build {
     },
 
     libraryDependencies ++= Seq(
-      "com.assembla.scala-incubator" % "graph-core_2.9.1" % "1.4.3",
-      
       "org.specs2" %% "specs2" % "1.9" % "test",
       "org.scalacheck" %% "scalacheck" % "1.9" % "test",
       "junit" % "junit" % "4.7" % "test",

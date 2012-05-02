@@ -33,8 +33,6 @@ package eu.flierl
 
 import scala.util.parsing.input.Reader
 import scala.util.parsing.input.CharSequenceReader
-import scalax.collection.Graph
-import scalax.collection.edge.WUnDiEdge
 import scala.util.Random.nextInt
 
 package object pandacub {
@@ -44,8 +42,6 @@ package object pandacub {
   type OpWithState = (BotState, String)
   
   type =/>[-A, +B] = PartialFunction[A, B]
-  
-  type G = Graph[Vec, WUnDiEdge]
   
   def init[A](a: A)(f: A => Any) = { f(a); a }
   

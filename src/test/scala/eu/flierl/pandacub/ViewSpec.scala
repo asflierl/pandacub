@@ -48,7 +48,7 @@ class ViewSpec extends Specification {
       + "__W__"
       + "m???B").graph()
                      
-      graph.nodes.map(_.value) must haveTheSameElementsAs (List(
+      graph.nodes must haveTheSameElementsAs (List(
         (0, 0), (2, 0), (3, 0), (4, 0),
         (0, 1), (1, 1), (3, 1), (4, 1),
         (1, 2), (2, 2), (3, 2),
@@ -63,9 +63,9 @@ class ViewSpec extends Specification {
       + "_M_"          // 3 + 4 + 1
       + "W__").graph() // 0 + 2 + 0
         
-      graph.nodes.map(_.value) must not contain(Vec(0, 2))
+      graph.nodes must not contain(Vec(0, 2))
       
-      graph.edges must have size(17)
+      graph.edgeCount must be equalTo 17
     }
     
   }                           

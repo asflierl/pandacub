@@ -31,19 +31,25 @@
 
 package eu.flierl.pandacub
 
-import org.specs2._
+import org.specs2.mutable._
 import org.junit.runner._
 import org.specs2.runner._
+import Utils.viewFrom
 
 @RunWith(classOf[JUnitRunner])
-class PandaCubSpec extends Specification { def is = args(sequential=true) ^
-  "Panda Cub consists of"                                                 ^ 
-                                                                         p^
-    "the opcode grammar" ~ new GrammarSpec                                ^
-    "showable stuff" ~ new ShowSpec                                       ^
-    "opcodes from the server and from the bot" ~ new OpcodeSpec           ^
-    "the view and its graph" ~ new ViewSpec                               ^
-    "a Dijkstra shortest path implementation" ~ new ShortestPathsSpec     ^
-    "a simple matrix-based graph" ~ new MatrixGraphSpec                   ^
-                                                                       end
+class MatrixGraphSpec extends Specification {
+  "A simple matrix-based graph" should { 
+                                                                                         
+    "contain the nodes and edges that were added to it" in {
+      val graph = MatrixGraph(2, (Vec(0, 0), Vec(1, 0), 23L))
+      
+      graph.nodes must contain (Vec(0, 0), Vec(1, 0)).only
+      graph contains Vec(0, 0) must beTrue
+      graph contains Vec(1, 0) must beTrue
+      graph contains Vec(65536, 42) must beFalse
+      graph edge (Vec(0, 0), Vec(1, 0)) must be equalTo 23L
+      graph edge (Vec(1, 0), Vec(0, 0)) must be equalTo 23L
+      graph edge (Vec(22, 1), Vec(2, 40)) must be equalTo -1L
+    }
+  }                           
 }

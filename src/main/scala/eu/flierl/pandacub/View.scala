@@ -32,11 +32,6 @@
 package eu.flierl.pandacub
 
 import Cells._
-import scalax.collection.Graph
-import scalax.collection.GraphPredef._
-import scalax.collection.GraphEdge._
-import scalax.collection.edge.Implicits._
-import scalax.collection.edge.WUnDiEdge
 import collection.breakOut
 
 final case class View(len: Int, area: Map[Vec, Cell], exclude: Set[Cell] = Set()) {
@@ -45,10 +40,14 @@ final case class View(len: Int, area: Map[Vec, Cell], exclude: Set[Cell] = Set()
   
   def all(c: Cell): Set[Vec] = inverse.getOrElse(c, Set())
   
-  def graph(discouragements: Map[Vec, Long] = Map()): G = (for {
-    v <- area.keys filter isSafe
-    n <- southEastNeighboursOf(v)
-  } yield v ~ n % weight(v, n, discouragements))(breakOut)
+  def graph(discouragements: Map[Vec, Long] = Map()): MatrixGraph = {
+    val g = new MatrixGraph(len)
+    for {
+      v <- area.keys filter isSafe
+      n <- southEastNeighboursOf(v)
+    } g.add(v, n, weight(v, n, discouragements))
+    g
+  }
   
   def weight(a: Vec, b: Vec, discouragements: Map[Vec, Long]): Long =
     discouragements get a orElse (discouragements get b) getOrElse 1L
