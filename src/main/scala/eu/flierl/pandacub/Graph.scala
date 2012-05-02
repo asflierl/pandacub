@@ -6,4 +6,5 @@ trait Graph {
   def nodes: Iterable[Vec]
   def neighboursOf(v: Vec): Iterator[(Vec, Long)]
   def edgeCount: Int
+  def areaSize: Int
 }

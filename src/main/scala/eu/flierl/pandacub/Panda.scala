@@ -37,8 +37,8 @@ import Cells.Cub
 
 final class Panda(state: BotState) {
   def react(time: Int, view: View, energy: Int): OpWithState =
-    if (time % 100 == 0) spawn(time, view)
-    else if (time % 100 <= 6) relax 
+    if (time % 60 == 0) spawn(time, view)
+    else if (time % 60 <= 4) relax 
     else decideBasedOn(state, view exclude Cub) nextMove
     
   private[this] def spawn(time: Int, view: View) = 
@@ -46,7 +46,7 @@ final class Panda(state: BotState) {
     
   private[this] def spawnOp(time: Int, view: View) = for {
     somewhere <- view.neighbours(view.center).headOption.toList
-  } yield Spawn(somewhere, "cub-" + time, 555)
+  } yield Spawn(somewhere, "cub-" + time, 333)
   
   private[this] def relax = (state, show(Status("*relax*")))
  

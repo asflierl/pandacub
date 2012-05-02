@@ -40,12 +40,16 @@ import scala.annotation.tailrec
 
 /** Implements Dijkstra's algorithm on top of an ordered tree, O(V * log(V) + E). */
 final class ShortestPaths(val graph: Graph, center: Vec) {
-  private val dist = Map[Vec, Long]()
-  private val previous = Map[Vec, Vec]()
+  private[this] val inf = Long.MaxValue
+  private[this] val dist = Map[Vec, Long]().withDefaultValue(inf)
+  private[this] val previous = Map[Vec, Vec]()
+  
+  dist.sizeHint(graph.areaSize * graph.areaSize)
+  previous.sizeHint(graph.areaSize * graph.areaSize)
   
   dist.put(center, 0L)
   
-  private val q = new TreeSet(Ord)
+  private[this] val q = new TreeSet(new WeightedVecOrder(dist))
   
   q addAll graph.nodes.asJavaCollection
   
@@ -59,8 +63,8 @@ final class ShortestPaths(val graph: Graph, center: Vec) {
       if (q contains neighbour) {
         val newDistance = dist(closest) + weight 
       
-        if (((dist contains neighbour) && newDistance < dist(neighbour)) 
-            || ! (dist contains neighbour)) {
+        val dn = dist(neighbour)
+        if ((dn != inf && newDistance < dn) || (dn == inf)) {
           q remove neighbour
           dist put (neighbour, newDistance)
           previous put (neighbour, closest)
@@ -82,19 +86,15 @@ final class ShortestPaths(val graph: Graph, center: Vec) {
   def pathTo(n: Vec, p: List[Vec] = List()): List[Vec] =
     if (! previous.contains(n)) p
     else pathTo(previous(n), n :: p)
+}
+
+private[this] class WeightedVecOrder(dist: Map[Vec, Long]) extends Comparator[Vec] {
+  final def compare(a: Vec, b: Vec) = {
+    val wa = dist(a)
+    val wb = dist(b)
+    val weights = if (wa < wb) -1 else if (wa == wb) 0 else 1
     
-  private[this] object Ord extends Comparator[Vec] {
-    private[this] val inf = Int.MaxValue.toLong
-    
-    def compare(a: Vec, b: Vec) = {
-      val weights = implicitly[Ordering[Long]].compare(grab(a), grab(b))
-      
-      if (weights != 0) weights
-      else implicitly[Ordering[Vec]].compare(a, b)
-    }
-    
-    @inline private[this] def grab(a: Vec) = {
-      dist.getOrElse(a, inf)
-    }
+    if (weights != 0) weights
+    else Vec.compare(a, b)
   }
 }

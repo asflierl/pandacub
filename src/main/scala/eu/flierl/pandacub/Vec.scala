@@ -54,11 +54,9 @@ object Vec extends ((Int, Int) => Vec) {
   
   def unapply(v: Vec): Option[(Int, Int)] = Some((v.x, v.y))
   
-  implicit val Ord: Ordering[Vec] = new Ordering[Vec] {
-    def compare(a: Vec, b: Vec) = {
-      val priorityCriterion = implicitly[Ordering[Int]].compare(a.x, b.x) 
-      if (priorityCriterion != 0) priorityCriterion
-      else implicitly[Ordering[Int]].compare(a.y, b.y)
-    }
+  @inline final def compare(a: Vec, b: Vec) = {
+    val priorityCriterion = if (a.x < b.x) -1 else if (a.x == b.x) 0 else 1 
+    if (priorityCriterion != 0) priorityCriterion
+    else if (a.y < b.y) -1 else if (a.y == b.y) 0 else 1
   }
 }

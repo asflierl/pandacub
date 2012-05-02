@@ -1,9 +1,8 @@
 package eu.flierl.pandacub
 
 import scala.collection.mutable.BitSet
-import Vec.Ord
 
-class MatrixGraph(viewLen: Int) extends Graph {
+final class MatrixGraph(viewLen: Int) extends Graph {
   import MatrixGraph.directions
   
   private[this] val matrixLen = viewLen * viewLen
@@ -20,6 +19,8 @@ class MatrixGraph(viewLen: Int) extends Graph {
     }
     m
   }
+  
+  def areaSize = viewLen
   
   def contains(v: Vec): Boolean = nodeSet contains cell(v)
   
@@ -45,8 +46,8 @@ class MatrixGraph(viewLen: Int) extends Graph {
   private[this] def cell(v: Vec): Int = v.y * viewLen + v.x
   private[this] def rev(i: Int): Vec = Vec(i % viewLen, i / viewLen)
   private[this] def idx(mx: Vec, my: Vec): Int = cell(my) * matrixLen + cell(mx)
-  private[this] def min(mx: Vec, my: Vec): Vec = if (Ord.compare(mx, my) <= 0) mx else my
-  private[this] def max(mx: Vec, my: Vec): Vec = if (Ord.compare(mx, my) > 0) mx else my
+  private[this] def min(mx: Vec, my: Vec): Vec = if (Vec.compare(mx, my) <= 0) mx else my
+  private[this] def max(mx: Vec, my: Vec): Vec = if (Vec.compare(mx, my) > 0) mx else my
 }
 object MatrixGraph {
   private[MatrixGraph] val directions = 
