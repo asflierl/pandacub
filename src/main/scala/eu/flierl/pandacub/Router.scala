@@ -46,7 +46,8 @@ object Router {
   lazy val parseAndRoute: OpWithGlobalState =/> OpWithGlobalUpdate = { 
     case (state, fromServer) =>
       try {
-        Monitor synchronized unsafeParseAndRoute(state, fromServer)
+        val parsed = Monitor synchronized parseAll(opcode, fromServer) 
+        unsafeParseAndRoute(state, parsed, fromServer)
       } catch {
         case exc: Exception =>
           exc.printStackTrace
@@ -54,8 +55,8 @@ object Router {
       } 
     }
   
-  private def unsafeParseAndRoute(state: GlobalState, fromServer: String): OpWithGlobalUpdate =
-    parseAll(opcode, fromServer) match {
+  private def unsafeParseAndRoute(state: GlobalState, result: Grammar.ParseResult[OpcodeFromServer], fromServer: String): OpWithGlobalUpdate =
+    result match {
       case Success(op, _) =>
         decideRoute(op, state)
       case f @ Failure(_,_) => 

@@ -40,7 +40,7 @@ final class Cub(state: BotState) {
     decideBasedOn(state, altered(view, energy)) nextMove
     
   private[this] val decideBasedOn = 
-    new PointsOfInterest(_: BotState, _: View) with MovementDecision {
+    new PointsOfInterest(_: BotState, _: View, false) with MovementDecision {
       def nextMove =
         closest (InterestingPanda)                       orElse (
         closest (InterestingFluppet, InterestingBamboo)) orElse (
@@ -52,6 +52,6 @@ final class Cub(state: BotState) {
     }
   
   private[this] def altered(view: View, energy: Int): View = 
-    if (energy > 6000) view exclude Cub 
+    if (energy > 2500) view exclude Cub 
     else view exclude (Panda, Cub) 
 }

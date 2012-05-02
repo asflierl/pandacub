@@ -37,8 +37,8 @@ import Cells.Cub
 
 final class Panda(state: BotState) {
   def react(time: Int, view: View, energy: Int): OpWithState =
-    if (time % 60 == 0) spawn(time, view)
-    else if (time % 60 <= 4) relax 
+    if (time % 20 == 0) spawn(time, view)
+    else if (time % 20 <= 2) relax 
     else decideBasedOn(state, view exclude Cub) nextMove
     
   private[this] def spawn(time: Int, view: View) = 
@@ -46,12 +46,12 @@ final class Panda(state: BotState) {
     
   private[this] def spawnOp(time: Int, view: View) = for {
     somewhere <- view.neighbours(view.center).headOption.toList
-  } yield Spawn(somewhere, "cub-" + time, 333)
+  } yield Spawn(somewhere, "cub-" + time, 100)
   
   private[this] def relax = (state, show(Status("*relax*")))
  
   private[this] val decideBasedOn = 
-    new PointsOfInterest(_: BotState, _: View) with MovementDecision {
+    new PointsOfInterest(_: BotState, _: View, true) with MovementDecision {
       def nextMove =
         closest (InterestingFluppet, InterestingBamboo) orElse (
         median  (InterestingEmpty))                     orElse (

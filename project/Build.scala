@@ -47,7 +47,7 @@ object PandaCubBuild extends Build {
             ++ addArtifact(Artifact("pandacub", "zip", "zip"), release).settings)
     
   def botSettings: Seq[Setting[_]] = Seq(
-    version := "2.2",
+    version := "3.0",
     organization := "eu.flierl",
     
     scalaVersion := "2.9.2",

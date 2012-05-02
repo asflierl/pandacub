@@ -36,7 +36,7 @@ import Interests._
 import Show.show
 import collection.breakOut
 
-abstract class PointsOfInterest(state: BotState, view: View) {
+abstract class PointsOfInterest(state: BotState, view: View, isMaster: Boolean) {
   import view.center
   
   private[this] val paths = new ShortestPaths(view graph discouragements, center)
@@ -74,7 +74,7 @@ abstract class PointsOfInterest(state: BotState, view: View) {
     val (nextStep, nextFocus) = findNextStepAndFocus(distance, target, interest)
    
     Some((state.copy(trail = translatedAndFadedTrail(nextStep), lastFocus = Some(nextFocus)), 
-          show(Move(nextStep - center) +: Status(interest.status))))
+          show(Move(nextStep - center) :: (if (isMaster) List(Status(interest.status)) else Nil))))
   }
   
   private[this] def findNextStepAndFocus(distance: Long, target: Vec, interest: Interest): (Vec, Focus) = {
