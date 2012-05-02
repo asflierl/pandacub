@@ -35,7 +35,8 @@ object EndOfRound extends ((GlobalState, Int) => OpWithGlobalUpdate) {
   def apply(state: GlobalState, energy: Int): OpWithGlobalUpdate = {
     val round = state.scores.length + 1
     val scores = energy :: state.scores
-    val average = (scores take 20 map (_.toLong) sum) / scores.length
+    val lastTwenty = scores take 20
+    val average = (lastTwenty map (_.toLong) sum) / lastTwenty.length
     println("PandaCub had %d energy after round %d." format (energy, round))
     println("PandaCub's average score in the 20 recent matches is %d." format average)
     (g => g.copy(scores = scores), "")
