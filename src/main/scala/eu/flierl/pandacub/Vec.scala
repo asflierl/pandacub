@@ -31,14 +31,29 @@
 
 package eu.flierl.pandacub
 
-case class Vec(x: Int, y: Int) {
+class Vec(val x: Int, val y: Int) {
   def +(v: Vec) = Vec(x + v.x, y + v.y)
   def -(v: Vec) = Vec(x - v.x, y - v.y)
   
-  override def hashCode = (17 * 31 + x) * 31 + y
+  override def equals(a: Any): Boolean = a match {
+    case other: Vec => x == other.x && y == other.y
+    case _ => false
+  }
+  
+  override val hashCode = (17 * 31 + x) * 31 + y
+  
+  override val toString = "Vec(" + x + "," + y + ")"
 }
 
 object Vec extends ((Int, Int) => Vec) {
+  private[this] val cache = Array.tabulate(200, 200)((x, y) => new Vec(x - 100, y - 100))
+  
+  def apply(x: Int, y: Int): Vec = 
+    if (x >= -100 && x < 100 && y >= -100 && y < 100) cache(x + 100)(y + 100)
+    else new Vec(x, y)
+  
+  def unapply(v: Vec): Option[(Int, Int)] = Some((v.x, v.y))
+  
   implicit val Ord: Ordering[Vec] = new Ordering[Vec] {
     def compare(a: Vec, b: Vec) = {
       val priorityCriterion = implicitly[Ordering[Int]].compare(a.x, b.x) 
