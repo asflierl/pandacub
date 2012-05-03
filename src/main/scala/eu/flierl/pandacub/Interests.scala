@@ -36,9 +36,10 @@ import Cells._
 object Interests {
   sealed class Interest(val cell: Cell, val status: String, val prio: Int)
 
-  case object InterestingPanda   extends Interest(Panda,   "*cuddle*",  4)
-  case object InterestingFluppet extends Interest(Fluppet, "*hug*",     3)
-  case object InterestingBamboo  extends Interest(Bamboo,  "*munch*",   2)
+  case object InterestingPanda   extends Interest(Panda,   "*cuddle*",  5)
+  case object InterestingCub     extends Interest(Cub,     "*cuddle*",  5)
+  case object InterestingFluppet extends Interest(Fluppet, "*hug*",     4)
+  case object InterestingBamboo  extends Interest(Bamboo,  "*munch*",   3)
   case object InterestingEmpty   extends Interest(Empty,   "*roam*",    1)
   case object InterestingFog     extends Interest(Fog,     "*explore*", 0)
 }

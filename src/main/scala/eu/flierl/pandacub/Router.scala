@@ -66,10 +66,10 @@ object Router {
     
   private def decideRoute(op: OpcodeFromServer, state: GlobalState): OpWithGlobalUpdate = op match {
     case Welcome(name, dir, apocalypse, round) =>
-      (identity, show(Status("..zzzZZ")))
+      (_ copy (apocalypse = apocalypse), show(Status("..zzzZZ")))
       
     case MasterReact(name, time, view, energy) =>
-      socialize(name, new Panda(state botStates name).react(time, view, energy))
+      socialize(name, new Panda(state botStates name, state apocalypse).react(time, view, energy))
       
     case MiniReact(generation, name, time, view, energy, master) =>
       socialize(name, new Cub(state botStates name).react(time, view, energy, master))

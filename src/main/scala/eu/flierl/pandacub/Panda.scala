@@ -33,13 +33,20 @@ package eu.flierl.pandacub
 
 import Interests._
 import Show.show
-import Cells.Cub
+import Cells._
 
-final class Panda(state: BotState) {
+final class Panda(state: BotState, apocalypse: Int) {
   def react(time: Int, view: View, energy: Int): OpWithState =
-    if (time % 20 == 0) spawn(time, view)
-    else if (time % 20 <= 2) relax 
-    else decideBasedOn(state, view exclude Cub) nextMove
+    if (apocalypse - time > apocalypse / 6)
+      if (time % 12 == 0) spawn(time, view)
+      else if (time % 12 <= 2) relax 
+      else decideBasedOn(state, altered(view: View, energy: Int)) nextMove
+    else
+      decideBasedOn(state, view exclude (Fluppet, Bamboo)) nextMove
+    
+  private[this] def altered(view: View, energy: Int): View =
+    if (energy < 1000) view exclude Cub
+    else view exclude (Cub, Fluppet, Bamboo)
     
   private[this] def spawn(time: Int, view: View) = 
     (state, show(Say("off you go") :: spawnOp(time, view)))
@@ -53,11 +60,12 @@ final class Panda(state: BotState) {
   private[this] val decideBasedOn = 
     new PointsOfInterest(_: BotState, _: View, true) with MovementDecision {
       def nextMove =
-        closest (InterestingFluppet, InterestingBamboo) orElse (
-        median  (InterestingEmpty))                     orElse (
-        farthest(InterestingEmpty))                     orElse (
-        median  (InterestingFog))                       orElse (
-        farthest(InterestingFog))                    getOrElse (
+        closest (InterestingCub)                         orElse (
+        closest (InterestingFluppet, InterestingBamboo)) orElse (
+        median  (InterestingEmpty))                      orElse (
+        farthest(InterestingEmpty))                      orElse (
+        median  (InterestingFog))                        orElse (
+        farthest(InterestingFog))                     getOrElse (
         confused)
     }
 }

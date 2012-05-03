@@ -33,4 +33,5 @@ package eu.flierl.pandacub
 
 case class GlobalState(
   botStates: Map[String, BotState] = Map().withDefaultValue(BotState()), 
-  scores: List[Int] = List())
+  scores: List[Int] = List(),
+  apocalypse: Int = 5000)
