@@ -37,7 +37,7 @@ import Cells.{ Panda, Cub }
 
 final class Cub(state: BotState, apocalypse: Int) {
   def react(time: Int, view: View, energy: Int, master: Vec): OpWithState =
-    if (apocalypse - time > apocalypse / 15)
+    if (apocalypse - time > 250)
       decideBasedOn(state, altered(view, energy)) nextMove
     else 
       homeSick(master)(state, view) nextMove

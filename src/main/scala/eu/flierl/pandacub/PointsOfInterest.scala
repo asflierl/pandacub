@@ -57,7 +57,7 @@ abstract class PointsOfInterest(state: BotState, view: View, isMaster: Boolean) 
   private[this] def direction(v: Vec)(s: Seq[Ω]): Ω = s minBy { case (d, t, i) =>
     val a = v.x - t.x
     val b = v.y - t.y
-    sqrt(a * a + b * b) + d
+    sqrt(a * a + b * b) + 3L * d
   }
     
   val confused = (state, show(Status("*confused*")))
