@@ -37,7 +37,7 @@ import Cells._
 
 final class Panda(state: BotState, apocalypse: Int) {
   def react(time: Int, view: View, energy: Int): OpWithState =
-    if (apocalypse - time > apocalypse / 6)
+    if (apocalypse - time > apocalypse / 15)
       if (time % 12 == 0) spawn(time, view)
       else if (time % 12 <= 2) relax 
       else decideBasedOn(state, altered(view: View, energy: Int)) nextMove

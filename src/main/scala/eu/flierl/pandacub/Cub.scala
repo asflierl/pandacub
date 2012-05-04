@@ -35,9 +35,12 @@ import Interests._
 import Show.show
 import Cells.{ Panda, Cub }
 
-final class Cub(state: BotState) {
+final class Cub(state: BotState, apocalypse: Int) {
   def react(time: Int, view: View, energy: Int, master: Vec): OpWithState =
-    decideBasedOn(state, altered(view, energy)) nextMove
+    if (apocalypse - time > apocalypse / 15)
+      decideBasedOn(state, altered(view, energy)) nextMove
+    else 
+      homeSick(master)(state, view) nextMove
     
   private[this] val decideBasedOn = 
     new PointsOfInterest(_: BotState, _: View, false) with MovementDecision {
@@ -51,7 +54,18 @@ final class Cub(state: BotState) {
         confused)
     }
   
+  private[this] def homeSick(master: Vec) = 
+    new PointsOfInterest(_: BotState, _: View, false) with MovementDecision {
+      def nextMove =
+        closest            (InterestingPanda)      orElse (
+        directionOf(master, InterestingFluppet, 
+                            InterestingBamboo, 
+                            InterestingEmpty, 
+                            InterestingFog))    getOrElse (
+        confused)
+    }
+  
   private[this] def altered(view: View, energy: Int): View = 
-    if (energy > 2500) view exclude Cub 
+    if (energy > 3333) view exclude Cub 
     else view exclude (Panda, Cub) 
 }

@@ -49,9 +49,17 @@ abstract class PointsOfInterest(state: BotState, view: View, isMaster: Boolean) 
   
   def median(interests: Interest*) = best(interests, view isEdge, aroundMedian)
   
+  def directionOf(v: Vec, interests: Interest*) = best(interests, _ => true, direction(v))
+  
   private[this] def aroundMedian(s: Seq[Ω]): Ω = selectRandomly(
     s.sortBy(_._1).zipWithIndex.filter(t => math.abs(t._2 - (s.size / 2)) < 5).map(_._1))
   
+  private[this] def direction(v: Vec)(s: Seq[Ω]): Ω = s minBy { case (d, t, i) =>
+    val a = v.x - t.x
+    val b = v.y - t.y
+    sqrt(a * a + b * b) + d
+  }
+    
   val confused = (state, show(Status("*confused*")))
   
   type Ω = (Long, Vec, Interest) // distance, target, interest
