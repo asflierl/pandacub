@@ -86,7 +86,7 @@ class ShortestPathsSpec extends Specification {
         
       val paths = new ShortestPaths(graph, Vec(3, 3))
       
-      paths.distanceTo(Vec(6, 1)) must be some
+      paths.distanceTo(Vec(6, 1)) must be some 3
     }
     
     "find around an obstacle" in {
@@ -106,10 +106,10 @@ class ShortestPathsSpec extends Specification {
       paths.distanceTo(Vec(7, 5)) must be some 9
       
       paths.pathTo(Vec(7, 5)) must be equalTo List(
-        Vec(3, 5), Vec(2, 6), Vec(2, 7), Vec(3, 8), Vec(4, 8), 
-        Vec(5, 8), Vec(6, 7), Vec(6, 6), Vec(7, 5))
+        Vec(4, 5), Vec(3, 6), Vec(2, 7), Vec(3, 8), Vec(4, 8), 
+        Vec(5, 8), Vec(6, 7), Vec(7, 6), Vec(7, 5))
       
-      paths.firstStepTo(Vec(7, 5)) must be some Vec(3, 5)
+      paths.firstStepTo(Vec(7, 5)) must be some Vec(4, 5)
     }
   }                           
 }

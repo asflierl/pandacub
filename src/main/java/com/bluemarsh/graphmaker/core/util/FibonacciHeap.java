@@ -16,7 +16,7 @@
  * Software is Nathan L. Fiedler. Portions created by Nathan L. Fiedler
  * are Copyright (C) 1999-2008. All Rights Reserved.
  *
- * Contributor(s): Nathan L. Fiedler, Andreas Flierl.
+ * Contributor(s): Nathan L. Fiedler (99.99%), Andreas Flierl (0.01%).
  * 
  * Portions Copyrighted 2012 Andreas Flierl
  */
@@ -37,7 +37,7 @@ package com.bluemarsh.graphmaker.core.util;
  * This is typically accomplished by synchronizing on some object that
  * naturally encapsulates the set.</p>
  *
- * @author  Nathan Fiedler
+ * @author Nathan Fiedler
  */
 public class FibonacciHeap<T> {
     /** Points to the minimum Node<T> in the heap. */

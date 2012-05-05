@@ -33,15 +33,15 @@ package eu.flierl.pandacub
 
 import collection.mutable.Map
 import collection.mutable.Set
-import java.util.TreeSet
-import java.util.Comparator
-import collection.JavaConverters._
 import scala.annotation.tailrec
+import com.bluemarsh.graphmaker.core.util.FibonacciHeap
+import FibonacciHeap.Node
 
-/** Implements Dijkstra's algorithm on top of an ordered tree, O(V * log(V) + E). */
+/** Implements Dijkstra's algorithm on top of a fibonacci heap, O(V * log(V) + E). */
 final class ShortestPaths(val graph: Graph, center: Vec) {
   private[this] val inf = Long.MaxValue
   private[this] val dist = Map[Vec, Long]().withDefaultValue(inf)
+  private[this] val qNodes = Map[Vec, Node[Vec]]()
   private[this] val previous = Map[Vec, Vec]()
   
   dist.sizeHint(graph.areaSize * graph.areaSize)
@@ -49,26 +49,32 @@ final class ShortestPaths(val graph: Graph, center: Vec) {
   
   dist.put(center, 0L)
   
-  private[this] val q = new TreeSet(new WeightedVecOrder(dist))
+  private[this] val q = new FibonacciHeap[Vec]
   
-  q addAll graph.nodes.asJavaCollection
+  graph.nodes foreach { vec =>
+    val node = q insert (vec, inf)
+    qNodes += (vec -> node)
+  }
   
-  while (! q.isEmpty && dist.contains(q.first)) {
-    val closest = q.pollFirst
-    val neighbours = graph neighboursOf closest
+  q decreaseKey (qNodes(center), 0)
+  
+  while (! q.isEmpty && dist.contains(q.min.data)) {
+    val closest = q.removeMin
+    val neighbours = graph neighboursOf closest.data
+    
+    qNodes -= closest.data
     
     while (neighbours hasNext) {
       val (neighbour, weight) = neighbours.next
       
-      if (q contains neighbour) {
-        val newDistance = dist(closest) + weight 
+      if (qNodes contains neighbour) {
+        val newDistance = dist(closest.data) + weight 
       
         val dn = dist(neighbour)
         if ((dn != inf && newDistance < dn) || (dn == inf)) {
-          q remove neighbour
           dist put (neighbour, newDistance)
-          previous put (neighbour, closest)
-          q add neighbour
+          previous put (neighbour, closest.data)
+          q decreaseKey (qNodes(neighbour), newDistance)
         }
       }
     }
@@ -86,15 +92,4 @@ final class ShortestPaths(val graph: Graph, center: Vec) {
   def pathTo(n: Vec, p: List[Vec] = List()): List[Vec] =
     if (! previous.contains(n)) p
     else pathTo(previous(n), n :: p)
-}
-
-private[this] class WeightedVecOrder(dist: Map[Vec, Long]) extends Comparator[Vec] {
-  final def compare(a: Vec, b: Vec) = {
-    val wa = dist(a)
-    val wb = dist(b)
-    val weights = if (wa < wb) -1 else if (wa == wb) 0 else 1
-    
-    if (weights != 0) weights
-    else Vec.compare(a, b)
-  }
 }
