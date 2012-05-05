@@ -38,6 +38,8 @@ import Utils.viewFrom
 
 @RunWith(classOf[JUnitRunner])
 class ViewSpec extends Specification {
+  implicit val grammar = new Grammar
+  
   "The view" should { 
                                                                                          
     "build a graph correctly" in {

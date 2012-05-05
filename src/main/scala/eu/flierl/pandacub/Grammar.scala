@@ -38,10 +38,22 @@ import scala.util.parsing.input.Reader
 import Show.show
 import Cells._
 
-object Grammar extends JavaTokenParsers {
-  lazy val opcode: Parser[OpcodeFromServer] = welcome | react | goodbye
+class Grammar extends JavaTokenParsers {
+  val view: Parser[View] = rep1(cell) ^^ View
+  val viewString: Parser[String] = view ^^ show[View]
+  val cell: Parser[Cell] = allCells map (c => elem(c.symbol) ^^ (_ => c)) reduceLeft(_ | _)
   
-  lazy val welcome: Parser[Welcome] = 
+  val string: Parser[String] = "[^=(),|]*".r
+  val vec: Parser[Vec] = (wholeNumber ~ ':' ~ wholeNumber) ^? { case x ~ _ ~ y => Vec(x toInt, y toInt) }
+  val vecStr: Parser[String] = vec ^^ show[Vec]
+  
+  val sortByKey = (l: List[String ~ Char ~ String]) => l.sortBy(_._1._1)
+  
+  val filterOptionalReactAttributes = (l: List[String ~ Char ~ String]) => l.filter { x => 
+    Set("name", "view", "generation", "time", "energy", "master") contains x._1._1
+  }.toSet.toList
+  
+  val welcome: Parser[Welcome] = 
     "Welcome(" ~> repsep(
         (("name" | "path")        ~ '=' ~ string) 
       | (("apocalypse" | "round") ~ '=' ~ wholeNumber)
@@ -51,7 +63,14 @@ object Grammar extends JavaTokenParsers {
         Welcome(n, new File(p), a toInt, r toInt)
     }
     
-  lazy val react: Parser[React] =
+  val reactAttribute: Parser[String ~ Char ~ String] = 
+    ("name"                             ~ '=' ~ string)      |
+    ("view"                             ~ '=' ~ viewString)  |
+    (("generation" | "time" | "energy") ~ '=' ~ wholeNumber) |
+    ("master"                           ~ '=' ~ vecStr)      |
+    (string                             ~ '=' ~ string)
+    
+  val react: Parser[React] =
     "React(" ~> repsep(reactAttribute, ',') <~ ')' ^^ filterOptionalReactAttributes ^^ sortByKey ^? {
       case List("energy"~_~e, "generation"~_~"0", "name"~_~n, "time"~_~t, "view"~_~v) =>
         MasterReact(n, t toInt, parseAll(view, v) get, e toInt)
@@ -61,28 +80,10 @@ object Grammar extends JavaTokenParsers {
         MiniReact(g toInt, n, t toInt, parseAll(view, v) get, e toInt, parseAll(vec, m) get)
     }
     
-  lazy val reactAttribute: Parser[String ~ Char ~ String] = 
-    ("name"                             ~ '=' ~ string)      |
-    ("view"                             ~ '=' ~ viewString)  |
-    (("generation" | "time" | "energy") ~ '=' ~ wholeNumber) |
-    ("master"                           ~ '=' ~ vecStr)      |
-    (string                             ~ '=' ~ string)
-    
-  lazy val goodbye: Parser[Goodbye] = 
+  val goodbye: Parser[Goodbye] = 
     "Goodbye(energy=" ~> wholeNumber <~ ")" ^^ (_.toInt) ^^ Goodbye
-  
-  lazy val string: Parser[String] = "[^=(),|]*".r
-  lazy val vecStr: Parser[String] = vec ^^ show[Vec]
-  lazy val vec: Parser[Vec] = (wholeNumber ~ ':' ~ wholeNumber) ^? { case x ~ _ ~ y => Vec(x toInt, y toInt) }
-  lazy val sortByKey = (l: List[String ~ Char ~ String]) => l.sortBy(_._1._1)
-  
-  lazy val filterOptionalReactAttributes = (l: List[String ~ Char ~ String]) => l.filter { x => 
-    Set("name", "view", "generation", "time", "energy", "master") contains x._1._1
-  }.toSet.toList
-  
-  lazy val viewString: Parser[String] = view ^^ show[View]
-  lazy val view: Parser[View] = rep1(cell) ^^ View
-  lazy val cell: Parser[Cell] = allCells map (c => elem(c.symbol) ^^ (_ => c)) reduceLeft(_ | _)
+    
+  val opcode: Parser[OpcodeFromServer] = welcome | react | goodbye
   
   case class FailureDetail(failure: Failure, input: String)
 }

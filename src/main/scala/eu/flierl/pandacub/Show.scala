@@ -40,8 +40,8 @@ trait Show[A] {
 object Show {
   def show[A](thing: A)(implicit please: Show[A]): String = please showSome thing  
   
-  implicit object FailureCanShow extends Show[Grammar.FailureDetail] {
-    def showSome(d: Grammar.FailureDetail) = "%s%nat: %s%n%s^".format(d.failure.msg, d.input, 
+  implicit object FailureCanShow extends Show[Grammar#FailureDetail] {
+    def showSome(d: Grammar#FailureDetail) = "%s%nat: %s%n%s^".format(d.failure.msg, d.input, 
       " " * (d.input.indexOf(d.failure.next) + 4))
   }
 

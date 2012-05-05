@@ -35,13 +35,15 @@ import org.specs2.mutable._
 import org.junit.runner._
 import org.specs2.runner._
 import org.specs2.matcher.ParserMatchers
-import Grammar.{ string, vec, welcome, react }
+
 import java.io.File
 import Cells._
 
 @RunWith(classOf[JUnitRunner])
 class GrammarSpec extends Specification with ParserMatchers {
-  val parsers = Grammar
+  implicit val parsers = new Grammar
+  
+  import parsers.{ string, vec, welcome, react }
   
   "The opcode grammar" should { 
                                                                                          

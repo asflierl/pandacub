@@ -32,5 +32,5 @@
 package eu.flierl.pandacub
 
 object Utils {
-  def viewFrom(s: String): View = Grammar.parseAll(Grammar.view, s).get
+  def viewFrom(s: String)(implicit g: Grammar): View = g.parseAll(g.view, s).get
 }

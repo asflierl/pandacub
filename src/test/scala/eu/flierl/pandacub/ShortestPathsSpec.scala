@@ -38,6 +38,8 @@ import Utils.viewFrom
 
 @RunWith(classOf[JUnitRunner])
 class ShortestPathsSpec extends Specification {
+  implicit val grammar = new Grammar
+  
   "The Dijkstra shortest path search algorithm" should { 
                                                                                          
     "find the only path available" in {

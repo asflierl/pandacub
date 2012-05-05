@@ -31,23 +31,17 @@
 
 package eu.flierl.pandacub
 
-import Grammar.{ 
-  parseAll, 
-  opcode, 
-  Success, 
-  Failure, 
-  FailureDetail
-}
 import Show.show
 
 object Router {
-  private[this] object Monitor
+  private[this] val localGrammar = new ThreadLocal[Grammar]()  
   
   lazy val parseAndRoute: OpWithGlobalState =/> OpWithGlobalUpdate = { 
     case (state, fromServer) =>
       try {
-        val parsed = Monitor synchronized parseAll(opcode, fromServer) 
-        unsafeParseAndRoute(state, parsed, fromServer)
+        val g = grammar
+        val parsed = g.parseAll(g.opcode, fromServer) 
+        unsafeParseAndRoute(state, g, parsed, fromServer)
       } catch {
         case exc: Exception =>
           exc.printStackTrace
@@ -55,16 +49,24 @@ object Router {
       } 
     }
   
-  private def unsafeParseAndRoute(state: GlobalState, result: Grammar.ParseResult[OpcodeFromServer], fromServer: String): OpWithGlobalUpdate =
+  private[this] def grammar = {
+    if (localGrammar.get == null) {
+      localGrammar set (new Grammar)
+    }
+    localGrammar.get
+  }
+  
+  private[this] def unsafeParseAndRoute(state: GlobalState, grammar: Grammar, 
+      result: Grammar#ParseResult[OpcodeFromServer], fromServer: String): OpWithGlobalUpdate =
     result match {
-      case Success(op, _) =>
+      case grammar.Success(op, _) =>
         decideRoute(op, state)
-      case f @ Failure(_,_) => 
-        println(show(FailureDetail(f, fromServer)))
+      case f @ grammar.Failure(_,_) => 
+        println(show[Grammar#FailureDetail](grammar.FailureDetail(f, fromServer)))
         (identity, show(Status("Wat?")))
     }
     
-  private def decideRoute(op: OpcodeFromServer, state: GlobalState): OpWithGlobalUpdate = op match {
+  private[this] def decideRoute(op: OpcodeFromServer, state: GlobalState): OpWithGlobalUpdate = op match {
     case Welcome(name, dir, apocalypse, round) =>
       (_ copy (apocalypse = apocalypse), show(Status("..zzzZZ")))
       
@@ -78,7 +80,7 @@ object Router {
       EndOfRound(state, energy)
   }
   
-  private def socialize(name: String, op: OpWithState): OpWithGlobalUpdate = op match {
+  private[this] def socialize(name: String, op: OpWithState): OpWithGlobalUpdate = op match {
     case (state, op) => 
       (g => (g.copy(botStates = g.botStates + (name -> state))), op)
   }

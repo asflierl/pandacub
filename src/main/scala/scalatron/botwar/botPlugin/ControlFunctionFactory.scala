@@ -35,19 +35,26 @@ import eu.flierl.pandacub.Router.parseAndRoute
 import eu.flierl.pandacub.{=/> => =/>}
 import eu.flierl.pandacub.OpWithGlobalUpdate
 import eu.flierl.pandacub.GlobalState
+import java.util.concurrent.atomic.AtomicReference
+import eu.flierl.pandacub.GlobalUpdate
+import scala.annotation.tailrec
 
 class ControlFunctionFactory {
   lazy val create: String => String = loadState andThen parseAndRoute andThen storeState 
   
-  private[this] def loadState = (s: String) => Monitor synchronized { (botState, s) } 
+  private[this] def loadState = (s: String) => (botState get, s) 
   
   private[this] def storeState: OpWithGlobalUpdate =/> String = {
-    case (update, op) => Monitor synchronized {
-      botState = update(botState)
-      op
-    }
-  } 
+    case (update, op) => updateState(update, op) 
+  }
   
-  private[this] object Monitor
-  private[this] var botState = GlobalState()
+  @tailrec
+  private[this] def updateState(update: GlobalUpdate, op: String): String = {
+    val former = botState.get
+    val updated = update(former)
+    if (botState.compareAndSet(former, updated)) op
+    else updateState(update, op)
+  }
+  
+  private[this] val botState = new AtomicReference(GlobalState())
 }
