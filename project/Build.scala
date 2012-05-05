@@ -47,7 +47,7 @@ object PandaCubBuild extends Build {
             ++ addArtifact(Artifact("pandacub", "zip", "zip"), release).settings)
     
   def botSettings: Seq[Setting[_]] = Seq(
-    version := "3.2.1",
+    version := "3.3",
     organization := "eu.flierl",
     
     scalaVersion := "2.9.2",
@@ -57,10 +57,19 @@ object PandaCubBuild extends Build {
     
     assembleArtifact in packageScala := false,
     
-    release <<= (assembly in Compile, crossTarget, name, version) map { (jar, target, name, version) =>
-      val zip = target / "%s-%s.zip".format(name, version)
-      IO.zip(Seq((jar, name + "/ScalatronBot.jar"), (file("license.txt"), "license.txt")), zip)
-      zip
+    release <<= (assembly in Compile, crossTarget, name, version, unmanagedSources in Compile) map { 
+      (jar, target, name, version, sources) =>
+        val zip = target / "%s-%s.zip".format(name, version)
+        val heapSrc = sources find (_.name == "FibonacciHeap.java") get
+        
+        IO.zip(
+          Seq(
+            (jar, name + "/ScalatronBot.jar"), 
+            (file("license.txt"), "license.txt"), 
+            (heapSrc, heapSrc name)), 
+          zip)
+          
+        zip
     },
     
     scalatronDir := file("Scalatron"),
