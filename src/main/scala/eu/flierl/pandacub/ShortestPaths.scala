@@ -56,7 +56,7 @@ final class ShortestPaths(val graph: Graph, center: Vec) {
     qNodes += (vec -> node)
   }
   
-  q decreaseKey (qNodes(center), 0)
+  qNodes get center foreach (n => q decreaseKey (n, 0))
   
   while (! q.isEmpty && dist.contains(q.min.data)) {
     val closest = q.removeMin
