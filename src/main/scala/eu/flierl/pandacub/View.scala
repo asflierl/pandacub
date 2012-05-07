@@ -53,12 +53,12 @@ final case class View(len: Int, area: Map[Vec, Cell], exclude: Set[Cell] = Set()
     discouragements get a orElse (discouragements get b) getOrElse 1L
   
   private[this] def southEastNeighboursOf(v: Vec): Seq[Vec] =
-    List(Vec(1, 0), Vec(0, 1), Vec(1, 1), Vec(1, -1)) map (v+) filter area.contains filter isSafe
+    List(Vec(1, 0), Vec(0, 1), Vec(1, 1), Vec(1, -1)).view map (v+) filter area.contains filter isSafe
     
   def neighbours(v: Vec): Seq[Vec] =
     List(Vec( 1, 0), Vec(0,  1), Vec( 1,  1), Vec( 1, -1),
          Vec(-1, 0), Vec(0, -1), Vec(-1, -1), Vec(-1,  1)
-    ) map (v+) filter area.contains filter isSafe
+    ).view map (v+) filter area.contains filter isSafe
   
   def isSafe(v: Vec) = if (v == center) true else area(v) match {
     case Wall | Tiger | Kitty | Shroom | Snorg => false
@@ -76,7 +76,7 @@ object View extends (List[Cell] => View) {
   def apply(cells: List[Cell]): View = {
     require((cells length) % 2 == 1, "there must be an odd number of cells")
     val n = sqrt(cells length)
-    View(n, (for ((cell, index) <- cells.zipWithIndex) yield pair(n, index, cell)) toMap)
+    View(n, (for ((cell, index) <- cells.view.zipWithIndex) yield pair(n, index, cell)) toMap)
   }
   
   private def pair(n: Int, i: Int, c: Cell) = Vec(i % n, i / n) -> c
