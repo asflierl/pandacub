@@ -46,6 +46,6 @@ object Cells {
   case object Fluppet extends Cell('B')
   case object Snorg extends Cell('b')
   
-  lazy val allCells = Set[Cell](Fog, Empty, Wall, Panda, Tiger, Cub,
+  val allCells = Set[Cell](Fog, Empty, Wall, Panda, Tiger, Cub,
     Kitty, Bamboo, Shroom, Fluppet, Snorg)
 }

@@ -34,36 +34,16 @@ package eu.flierl.pandacub
 import Show.show
 
 object Router {
-  private[this] val localGrammar = new ThreadLocal[Grammar]()  
-  
   lazy val parseAndRoute: OpWithGlobalState =/> OpWithGlobalUpdate = { 
     case (state, fromServer) =>
       try {
-        val g = grammar
-        val parsed = g.parseAll(g.opcode, fromServer) 
-        unsafeParseAndRoute(state, g, parsed, fromServer)
+        val parsed = Parser.parse(fromServer) 
+        decideRoute(parsed, state)
       } catch {
         case exc: Exception =>
           exc.printStackTrace
           (identity, show(Status("oh noooo")))
       } 
-    }
-  
-  private[this] def grammar = {
-    if (localGrammar.get == null) {
-      localGrammar set (new Grammar)
-    }
-    localGrammar.get
-  }
-  
-  private[this] def unsafeParseAndRoute(state: GlobalState, grammar: Grammar, 
-      result: Grammar#ParseResult[OpcodeFromServer], fromServer: String): OpWithGlobalUpdate =
-    result match {
-      case grammar.Success(op, _) =>
-        decideRoute(op, state)
-      case f @ grammar.Failure(_,_) => 
-        println(show[Grammar#FailureDetail](grammar.FailureDetail(f, fromServer)))
-        (identity, show(Status("Wat?")))
     }
     
   private[this] def decideRoute(op: OpcodeFromServer, state: GlobalState): OpWithGlobalUpdate = op match {

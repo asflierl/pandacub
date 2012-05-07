@@ -34,12 +34,9 @@ package eu.flierl.pandacub
 import org.specs2.mutable._
 import org.junit.runner._
 import org.specs2.runner._
-import Utils.viewFrom
 
 @RunWith(classOf[JUnitRunner])
 class ShortestPathsSpec extends Specification {
-  implicit val grammar = new Grammar
-  
   "The Dijkstra shortest path search algorithm" should { 
                                                                                          
     "find the only path available" in {
@@ -77,7 +74,7 @@ class ShortestPathsSpec extends Specification {
     }
     
     "find some bamboo" in {
-      val graph = viewFrom(
+      val graph = Parser.view(
         "_______"
       + "______P"
       + "_______"
@@ -92,7 +89,7 @@ class ShortestPathsSpec extends Specification {
     }
     
     "find around an obstacle" in {
-      val graph = viewFrom(
+      val graph = Parser.view(
         "_________"
       + "_WWWWW___"
       + "_____W___"

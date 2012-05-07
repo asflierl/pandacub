@@ -46,6 +46,7 @@ final class ShortestPaths(val graph: Graph, center: Vec) {
   
   dist.sizeHint(graph.areaSize * graph.areaSize)
   previous.sizeHint(graph.areaSize * graph.areaSize)
+  qNodes.sizeHint(graph.areaSize * graph.areaSize)
   
   dist.put(center, 0L)
   

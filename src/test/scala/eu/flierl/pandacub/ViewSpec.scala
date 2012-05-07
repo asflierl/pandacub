@@ -34,16 +34,13 @@ package eu.flierl.pandacub
 import org.specs2.mutable._
 import org.junit.runner._
 import org.specs2.runner._
-import Utils.viewFrom
 
 @RunWith(classOf[JUnitRunner])
 class ViewSpec extends Specification {
-  implicit val grammar = new Grammar
-  
   "The view" should { 
                                                                                          
     "build a graph correctly" in {
-      val graph = viewFrom(
+      val graph = Parser.view(
         "_b__P"
       + "_Sp__"
       + "W_M_s"
@@ -60,7 +57,7 @@ class ViewSpec extends Specification {
     }
     
     "connect graph nodes correctly" in {
-      val graph = viewFrom(
+      val graph = Parser.view(
         "___"          // 3 + 3 + 1
       + "_M_"          // 3 + 4 + 1
       + "W__").graph() // 0 + 2 + 0
