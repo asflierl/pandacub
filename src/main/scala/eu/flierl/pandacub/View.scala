@@ -71,13 +71,3 @@ final case class View(len: Int, area: Map[Vec, Cell], exclude: Set[Cell] = Set()
   
   override def toString = Show.show(this).sliding(len, len).mkString("\n")
 }
-
-object View extends (List[Cell] => View) {
-  def apply(cells: List[Cell]): View = {
-    require((cells length) % 2 == 1, "there must be an odd number of cells")
-    val n = sqrt(cells length)
-    View(n, (for ((cell, index) <- cells.view.zipWithIndex) yield pair(n, index, cell)) toMap)
-  }
-  
-  private def pair(n: Int, i: Int, c: Cell) = Vec(i % n, i / n) -> c
-}
