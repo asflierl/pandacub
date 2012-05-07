@@ -34,15 +34,13 @@ import Keys._
 import Project.Setting
 import com.typesafe.sbteclipse.plugin.EclipsePlugin.EclipseKeys
 import com.typesafe.sbteclipse.plugin.EclipsePlugin.EclipseCreateSrc
-import sbtassembly.Plugin._
-import AssemblyKeys._
+import Keys.{ `package` => pack }
 
 object PandaCubBuild extends Build {
   lazy val root = Project(
     id = "pandacub",
     base = file("."),
     settings = Project.defaultSettings 
-            ++ assemblySettings 
             ++ botSettings
             ++ addArtifact(Artifact("pandacub", "zip", "zip"), release).settings)
     
@@ -55,9 +53,7 @@ object PandaCubBuild extends Build {
       
     EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource,
     
-    assembleArtifact in packageScala := false,
-    
-    release <<= (assembly in Compile, crossTarget, name, version, unmanagedSources in Compile) map { 
+    release <<= (pack in Compile, crossTarget, name, version, unmanagedSources in Compile) map { 
       (jar, target, name, version, sources) =>
         val zip = target / "%s-%s.zip".format(name, version)
         val heapSrc = sources find (_.name == "FibonacciHeap.java") get
@@ -77,7 +73,7 @@ object PandaCubBuild extends Build {
     javaOptions ++= Seq("-server", "-Xmx2g", "-XX:+TieredCompilation", 
       "-XX:Tier2CompileThreshold=150000", "-XX:CompileThreshold=1500", "-XX:+AggressiveOpts"),
     
-    play <<= (scalatronDir, name, javaOptions, assembly in Compile) map {
+    play <<= (scalatronDir, name, javaOptions, pack in Compile) map {
       (base, name, javaOptions, botJar) =>
         require(base exists, "The setting '%s' must point to the base directory of an existing " +
       		"Scalatron installation.".format(scalatronDir.key.label))
